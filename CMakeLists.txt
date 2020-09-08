@@ -9,6 +9,9 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(glm REQUIRED)
 #TODO: more robust failure case
-add_executable(spite main.cpp)  
+
+include_directories(${PROJECT_SOURCE_DIR})
+
+add_executable(spite main.cpp VulkanDriver.cpp VulkanInstance.cpp)  
 
 target_link_libraries(spite glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)

@@ -1,7 +1,5 @@
-#define GLFW_INCLUDE_VULKAN
 #include <assert.h>
-#include <GLFW/glfw3.h>
-#include <vulkan/vulkan.h>
+#include "VulkanDriver.h"
 #include <iostream>
 #include <vector>
 #include <optional>
@@ -29,15 +27,15 @@ namespace
     // be abstracted seperatly from each other.
     // Driver or vulkan class holds on to abstracted versions of these
     // which gets filled at start
-    VkInstance VulkanInstance;
-    VkSurfaceKHR VulkanSurface;
-    VkPhysicalDevice VulkanPhysicalDevice;
-    VkDevice VulkanDevice;
+    VkInstance VulkanInstanceTemp;
+    VkSurfaceKHR VulkanSurfaceTemp;
+    VkPhysicalDevice VulkanPhysicalDeviceTemp;
+    VkDevice VulkanDeviceTemp;
     // Figure out what the fuck these are
     VkQueue VulkanGraphicsQueue; 
     VkQueue VulkanPresentQueue;
     
-    VkCommandPool VulkanCommandPool; //Create a command pool class
+    VkCommandPool VulkanCommandPoolTemp; //Create a command pool class
     VkDebugUtilsMessengerEXT VulkandebugMessenger;
 
     //queueFamilies
@@ -110,24 +108,24 @@ namespace
     {
         SwapChainSupportDetails details;
 
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, VulkanSurface, &details.capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, VulkanSurfaceTemp, &details.capabilities);
 
         uint32_t formatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, VulkanSurface, &formatCount, nullptr);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, VulkanSurfaceTemp, &formatCount, nullptr);
 
         if (formatCount != 0)
         {
             details.formats.resize(formatCount);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, VulkanSurface, &formatCount, details.formats.data());
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, VulkanSurfaceTemp, &formatCount, details.formats.data());
         }
 
         uint32_t presentModeCount;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, VulkanSurface, &presentModeCount, nullptr);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, VulkanSurfaceTemp, &presentModeCount, nullptr);
 
         if (presentModeCount != 0)
         {
             details.presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(device, VulkanSurface, &presentModeCount, details.presentModes.data());
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, VulkanSurfaceTemp, &presentModeCount, details.presentModes.data());
         }
 
         return details;
@@ -170,7 +168,7 @@ namespace
             }
 
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, VulkanSurface, &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, VulkanSurfaceTemp, &presentSupport);
 
             if (queueFamily.queueCount > 0 && presentSupport)
             {
@@ -214,11 +212,11 @@ namespace
         VkPhysicalDevice result;
 
         uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(VulkanInstance, &deviceCount, nullptr);
+        vkEnumeratePhysicalDevices(VulkanInstanceTemp, &deviceCount, nullptr);
         assert(deviceCount != 0); // failed to find any device
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
-        vkEnumeratePhysicalDevices(VulkanInstance, &deviceCount, devices.data());
+        vkEnumeratePhysicalDevices(VulkanInstanceTemp, &deviceCount, devices.data());
 
         for (int i = 0; i < devices.size(); i++)
         {
@@ -245,7 +243,7 @@ namespace SPRenderState
     //create vulkan instance and debug layers.
     VkResult SPrsInitDevice(bool enableValidation)
     {
-        assert(VulkanDevice == VK_NULL_HANDLE); //Attempting to re-init without destruction.
+        assert(VulkanDeviceTemp == VK_NULL_HANDLE); //Attempting to re-init without destruction.
         VkResult result;
 
         VkApplicationInfo appInfo = {};
@@ -289,7 +287,7 @@ namespace SPRenderState
         createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
 
-        result = vkCreateInstance(&createInfo, nullptr, &VulkanInstance);
+        result = vkCreateInstance(&createInfo, nullptr, &VulkanInstanceTemp);
         assert(result == VK_SUCCESS);
 
         if (enableValidation)
@@ -301,7 +299,7 @@ namespace SPRenderState
             debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
             debugCreateInfo.pfnUserCallback = debugCallback;
 
-            result = CreateDebugUtilsMessengerEXT(VulkanInstance, &debugCreateInfo, nullptr, &VulkandebugMessenger);
+            result = CreateDebugUtilsMessengerEXT(VulkanInstanceTemp, &debugCreateInfo, nullptr, &VulkandebugMessenger);
             assert(result == VK_SUCCESS);
         }
         return VK_SUCCESS;
@@ -310,8 +308,8 @@ namespace SPRenderState
     //Create VkDevice
     void SPrsCreatePhysicalDevice(bool enableValidation)
     {
-        VulkanPhysicalDevice = FindGraphicsDevice();
-        QueueFamilyIndices indices = findQueueFamilies(VulkanPhysicalDevice);
+        VulkanPhysicalDeviceTemp = FindGraphicsDevice();
+        QueueFamilyIndices indices = findQueueFamilies(VulkanPhysicalDeviceTemp);
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
@@ -353,17 +351,17 @@ namespace SPRenderState
             createInfo.enabledLayerCount = 0;
         }
 
-        VkResult result = vkCreateDevice(VulkanPhysicalDevice, &createInfo, nullptr, &VulkanDevice);
+        VkResult result = vkCreateDevice(VulkanPhysicalDeviceTemp, &createInfo, nullptr, &VulkanDeviceTemp);
         assert(result == VK_SUCCESS);
 
-        vkGetDeviceQueue(VulkanDevice, indices.graphicsFamily.value(), 0, &VulkanGraphicsQueue);
-        vkGetDeviceQueue(VulkanDevice, indices.presentFamily.value(), 0, &VulkanPresentQueue);
+        vkGetDeviceQueue(VulkanDeviceTemp, indices.graphicsFamily.value(), 0, &VulkanGraphicsQueue);
+        vkGetDeviceQueue(VulkanDeviceTemp, indices.presentFamily.value(), 0, &VulkanPresentQueue);
     }
 
     //Create vkCommandPool
     void SPrsCreateCommandPool()
     {
-        QueueFamilyIndices queueFamilyIndices = findQueueFamilies(VulkanPhysicalDevice);
+        QueueFamilyIndices queueFamilyIndices = findQueueFamilies(VulkanPhysicalDeviceTemp);
 
         VkCommandPoolCreateInfo createInfo;
         createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -376,7 +374,7 @@ namespace SPRenderState
     {
         // init debug messeger
         SPrsInitDevice(EnableValidation);
-        glfwCreateWindowSurface(VulkanInstance, window, nullptr, &VulkanSurface);
+        glfwCreateWindowSurface(VulkanInstanceTemp, window, nullptr, &VulkanSurfaceTemp);
         SPrsCreatePhysicalDevice(EnableValidation);
         SPrsCreateCommandPool();
         return VK_SUCCESS;
@@ -384,12 +382,12 @@ namespace SPRenderState
     void shutdown()
     {
 
-        vkDestroyCommandPool(VulkanDevice, VulkanCommandPool, nullptr);
-        vkDestroyDevice(VulkanDevice, nullptr);
+        vkDestroyCommandPool(VulkanDeviceTemp, VulkanCommandPoolTemp, nullptr);
+        vkDestroyDevice(VulkanDeviceTemp, nullptr);
         if (VulkandebugMessenger != VK_NULL_HANDLE) // maybe just cache the validation enable
-            DestroyDebugUtilsMessengerEXT(VulkanInstance, VulkandebugMessenger, nullptr);
-        vkDestroySurfaceKHR(VulkanInstance, VulkanSurface, nullptr);
-        vkDestroyInstance(VulkanInstance, nullptr);
+            DestroyDebugUtilsMessengerEXT(VulkanInstanceTemp, VulkandebugMessenger, nullptr);
+        vkDestroySurfaceKHR(VulkanInstanceTemp, VulkanSurfaceTemp, nullptr);
+        vkDestroyInstance(VulkanInstanceTemp, nullptr);
         //destroy instance
         //destroy device
         //destroy physical device
