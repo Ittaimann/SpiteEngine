@@ -11,7 +11,15 @@ find_package(glm REQUIRED)
 #TODO: more robust failure case
 
 include_directories(${PROJECT_SOURCE_DIR})
-
-add_executable(spite main.cpp VulkanDriver.cpp VulkanInstance.cpp)  
+set(VulkanDriver 
+    VulkanDriver.cpp
+    VulkanInstance.cpp
+    VulkanDevice.cpp
+    VulkanCommandPool.cpp
+    VulkanQueue.cpp
+    VulkanSurface.cpp
+    VulkanPhysicalDevice.cpp
+    VulkanSwapChain.cpp)
+add_executable(spite main.cpp ${VulkanDriver})  
 
 target_link_libraries(spite glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)

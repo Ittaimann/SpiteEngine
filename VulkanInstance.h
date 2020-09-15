@@ -10,10 +10,14 @@ class VulkanInstance
 public:
     VulkanInstance(/* args */);
     ~VulkanInstance();
-    void init();
+    void init(bool validation);
+    void cleanup();
+
     VkInstance getVulkanInstance();
 private:
     VkInstance mInstance; // the instance
+    VkDebugUtilsMessengerEXT mDebugMessenger;
+    VkDebugUtilsMessengerCreateInfoEXT createDebugInfo();
 };
 
 #endif

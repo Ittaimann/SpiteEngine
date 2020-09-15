@@ -16,7 +16,7 @@ public:
     VulkanDriver(/* args */);
     ~VulkanDriver();
 
-    void init();
+    void init(bool validation,GLFWwindow *window);
     void cleanup();
 private:
 
