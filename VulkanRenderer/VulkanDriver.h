@@ -8,7 +8,7 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanCommandPool.h"
 #include "VulkanSurface.h"
-
+#include "VulkanSwapChain.h"
 
 class VulkanDriver
 {
@@ -29,7 +29,7 @@ private:
     VulkanPhysicalDevice mPhysicalDevice;
     VulkanSurface mSurface;
     VulkanCommandPool mCommandPool;
-    /* data */
+    VulkanSwapChain mSwapChain;
 };
 
 

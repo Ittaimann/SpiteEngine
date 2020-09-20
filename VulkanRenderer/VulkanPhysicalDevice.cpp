@@ -141,6 +141,7 @@ void VulkanPhysicalDevice::init(VkInstance instance, VkSurfaceKHR surface)
 {
     mPhysicalDevice = FindGraphicsDevice(instance, surface);
     mQueueFamilies = findQueueFamilies(mPhysicalDevice, surface);
+    mSwapChainDetails = querySwapChainSupport(mPhysicalDevice,surface);
 }
 
 void VulkanPhysicalDevice::cleanup()
@@ -154,4 +155,9 @@ VulkanHelper::QueueFamilyIndices VulkanPhysicalDevice::getFamilyIndices()
 VkPhysicalDevice VulkanPhysicalDevice::getPhysicalDevice()
 {
     return mPhysicalDevice;
+}
+
+VulkanHelper::SwapChainSupportDetails VulkanPhysicalDevice::getSwapChainDetails()
+{
+    return mSwapChainDetails;
 }

@@ -13,10 +13,12 @@ public:
 
     VkPhysicalDevice getPhysicalDevice();
     VulkanHelper::QueueFamilyIndices getFamilyIndices();
+    VulkanHelper::SwapChainSupportDetails getSwapChainDetails();
 private:
 
     VkPhysicalDevice mPhysicalDevice;
     VulkanHelper::QueueFamilyIndices mQueueFamilies;
+    VulkanHelper::SwapChainSupportDetails mSwapChainDetails;
     /* data */
 };
 

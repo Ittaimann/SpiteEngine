@@ -9,7 +9,7 @@ public:
     VulkanSurface(/* args */);
     ~VulkanSurface();
     void init(VkInstance instance, GLFWwindow *window);
-    void cleanup();
+    void cleanup(VkInstance instance);
     VkSurfaceKHR getVulkanSurface();
     
 private:
