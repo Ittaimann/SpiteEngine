@@ -6,15 +6,19 @@
 #include <iostream>
 #include <optional>
 
-#define GLFW_INCLUDE_VULKAN //uh maybe a different place?
-#include <GLFW/glfw3.h>
+// #define GLFW_INCLUDE_VULKAN //uh maybe a different place?
+// #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
 namespace VulkanHelper
 {
-
-    //TODO: move these to config
-    const std::vector<const char *> validationLayers = {"VK_LAYER_LUNARG_api_dump"};
+    //TODO: do some serious dismantling of this file. Start with the extensions and validation
+    // to config. 
+    
+    //TODO: validationLayers used in instance and device, move to init.
+    // deviceExtensions Used in physical device and device. Probably pass in init.
+    // have these be optinos in the config
+    const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
     struct QueueFamilyIndices

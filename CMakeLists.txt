@@ -12,6 +12,6 @@ find_package(glm REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR})
 add_subdirectory(VulkanRenderer)
-add_executable(spite main.cpp)  
+add_executable(spite main.cpp WindowManager.cpp)  
 
-target_link_libraries(spite glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)
+target_link_libraries(spite glfw ${GLFW_LIBRARIES} Vulkan::Vulkan VulkanDriver)

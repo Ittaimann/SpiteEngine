@@ -2,6 +2,7 @@
 #define VULKAN_SURFACE_H
 
 #include "VulkanHelpers.h"
+#include <GLFW/glfw3.h>
 
 class VulkanSurface
 {

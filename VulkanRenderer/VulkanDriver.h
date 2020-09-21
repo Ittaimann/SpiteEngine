@@ -1,6 +1,7 @@
 #ifndef VULKAN_DRIVER_H
 #define VULKAN_DRIVER_H
 
+
 #include "VulkanHelpers.h"
 #include "VulkanInstance.h"
 #include "VulkanDevice.h"
@@ -10,13 +11,15 @@
 #include "VulkanSurface.h"
 #include "VulkanSwapChain.h"
 
+class WindowManager;
+
 class VulkanDriver
 {
 public:
-    VulkanDriver(/* args */);
+    VulkanDriver();
     ~VulkanDriver();
 
-    void init(bool validation,GLFWwindow *window);
+    void init(bool validation,WindowManager* window);
     void cleanup();
 private:
 

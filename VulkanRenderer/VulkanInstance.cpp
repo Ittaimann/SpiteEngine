@@ -1,5 +1,11 @@
 #include <vector>
+#include <GLFW/glfw3.h>
+
 #include "VulkanInstance.h"
+
+//TODO:
+namespace
+{
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
 {
@@ -54,6 +60,10 @@ void FindValidationLayers()
         assert(layerFound); //WE DID NOT FIND A LAYER REQUESTED
     }
 }
+
+
+}
+
 
 VulkanInstance::VulkanInstance()
 {

@@ -8,7 +8,7 @@ VulkanSurface::~VulkanSurface()
 
 void VulkanSurface::init(VkInstance instance,GLFWwindow *window)
 {
-    glfwCreateWindowSurface(instance, window, nullptr, &mSurface);
+        glfwCreateWindowSurface(instance, window, nullptr, &mSurface);
 }
 
 void VulkanSurface::cleanup(VkInstance instance)

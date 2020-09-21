@@ -1,7 +1,7 @@
 #ifndef VULKAN_COMMAND_POOL_H
 #define VULKAN_COMMAND_POOL_H
 
-#include "VulkanHelpers.h"
+#include <vulkan/vulkan.h>
 
 class VulkanCommandPool
 {
