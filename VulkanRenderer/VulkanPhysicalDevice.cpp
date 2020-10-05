@@ -2,8 +2,42 @@
 #include <set>
 #include <string>
 
-//TODO: organize this file a little bit...a lot a bit
-VulkanHelper::QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
+VulkanPhysicalDevice::VulkanPhysicalDevice()
+{
+}
+
+VulkanPhysicalDevice::~VulkanPhysicalDevice()
+{
+}
+
+void VulkanPhysicalDevice::init(VkInstance instance, VkSurfaceKHR surface)
+{
+    mPhysicalDevice = FindGraphicsDevice(instance, surface);
+    mQueueFamilies = findQueueFamilies(mPhysicalDevice, surface);
+    mSwapChainDetails = querySwapChainSupport(mPhysicalDevice, surface);
+}
+
+void VulkanPhysicalDevice::cleanup()
+{
+}
+
+VulkanHelper::QueueFamilyIndices VulkanPhysicalDevice::getFamilyIndices()
+{
+    return mQueueFamilies;
+}
+
+VkPhysicalDevice VulkanPhysicalDevice::getPhysicalDevice()
+{
+    return mPhysicalDevice;
+}
+
+VulkanHelper::SwapChainSupportDetails VulkanPhysicalDevice::getSwapChainDetails()
+{
+    return mSwapChainDetails;
+}
+
+//TODO revist this to clean up. kinda messy
+VulkanHelper::QueueFamilyIndices VulkanPhysicalDevice::findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
     VulkanHelper::QueueFamilyIndices indices;
 
@@ -39,7 +73,7 @@ VulkanHelper::QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSu
     return indices;
 }
 
-bool checkDeviceExtensionSupport(VkPhysicalDevice device)
+bool VulkanPhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device)
 {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -57,10 +91,7 @@ bool checkDeviceExtensionSupport(VkPhysicalDevice device)
     return requiredExtensions.empty();
 }
 
-//TODO: move this to vulkanswapchain? and pass it down probably that? keep in vulkan helper? store the end result?
-// if I store it then I can take all the helpers and put them in here 🤔.
-
-VulkanHelper::SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+VulkanHelper::SwapChainSupportDetails VulkanPhysicalDevice::querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
     VulkanHelper::SwapChainSupportDetails details;
 
@@ -86,7 +117,7 @@ VulkanHelper::SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice dev
 
     return details;
 }
-bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
+bool VulkanPhysicalDevice::isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
     VulkanHelper::QueueFamilyIndices indices = findQueueFamilies(device, surface);
 
@@ -105,7 +136,7 @@ bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
     return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
-VkPhysicalDevice FindGraphicsDevice(VkInstance instance, VkSurfaceKHR surface)
+VkPhysicalDevice VulkanPhysicalDevice::FindGraphicsDevice(VkInstance instance, VkSurfaceKHR surface)
 {
     VkPhysicalDevice result;
 
@@ -127,37 +158,4 @@ VkPhysicalDevice FindGraphicsDevice(VkInstance instance, VkSurfaceKHR surface)
     }
     assert(result != VK_NULL_HANDLE); // failed to appropriate device
     return result;
-}
-
-VulkanPhysicalDevice::VulkanPhysicalDevice()
-{
-}
-
-VulkanPhysicalDevice::~VulkanPhysicalDevice()
-{
-}
-
-void VulkanPhysicalDevice::init(VkInstance instance, VkSurfaceKHR surface)
-{
-    mPhysicalDevice = FindGraphicsDevice(instance, surface);
-    mQueueFamilies = findQueueFamilies(mPhysicalDevice, surface);
-    mSwapChainDetails = querySwapChainSupport(mPhysicalDevice,surface);
-}
-
-void VulkanPhysicalDevice::cleanup()
-{}
-
-VulkanHelper::QueueFamilyIndices VulkanPhysicalDevice::getFamilyIndices()
-{
-    return mQueueFamilies;
-}
-
-VkPhysicalDevice VulkanPhysicalDevice::getPhysicalDevice()
-{
-    return mPhysicalDevice;
-}
-
-VulkanHelper::SwapChainSupportDetails VulkanPhysicalDevice::getSwapChainDetails()
-{
-    return mSwapChainDetails;
 }

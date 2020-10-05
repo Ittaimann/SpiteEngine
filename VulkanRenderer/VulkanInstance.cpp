@@ -3,13 +3,12 @@
 
 #include "VulkanInstance.h"
 
-//TODO:
+//TODO: revist this. everything here should maybe go elsewhere
 namespace
 {
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
 {
-    //TODO: FIND A BETTER PLACE TO PUT THIS!!!
     std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
     return VK_FALSE;
 }
@@ -36,7 +35,6 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-//TODO have this take in from config
 void FindValidationLayers()
 {
     uint32_t layerCount;

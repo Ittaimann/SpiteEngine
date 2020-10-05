@@ -23,8 +23,6 @@ public:
     void cleanup();
 private:
 
-    //DRIVER INIT
-    //TODO: refactor this though probably fine 
     VulkanInstance mInstance;
     VulkanDevice mDevice;
     VulkanQueue mPresentQueue;

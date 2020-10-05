@@ -6,16 +6,12 @@
 #include <iostream>
 #include <optional>
 
-// #define GLFW_INCLUDE_VULKAN //uh maybe a different place?
-// #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
 namespace VulkanHelper
 {
     //TODO: do some serious dismantling of this file. Start with the extensions and validation
-    // to config. 
-    
-    //TODO: validationLayers used in instance and device, move to init.
+    // validationLayers used in instance and device, move to init.
     // deviceExtensions Used in physical device and device. Probably pass in init.
     // have these be optinos in the config
     const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};

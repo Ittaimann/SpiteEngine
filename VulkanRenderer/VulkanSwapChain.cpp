@@ -54,12 +54,8 @@ void VulkanSwapChain::init(VkDevice device, VkSurfaceKHR surface, const VulkanHe
 
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &mSwapChain) != VK_SUCCESS)
-    {
-        //TODO: standardize errors getting thrown switch to assert or ask people for
-        // how they handle it. Assert macro?
-        throw std::runtime_error("failed to create swap chain!");
-    }
+    VkResult result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &mSwapChain);
+    assert(result ==VK_SUCCESS);
 
     vkGetSwapchainImagesKHR(device, mSwapChain, &imageCount, nullptr);
     mSwapChainImages.resize(imageCount);

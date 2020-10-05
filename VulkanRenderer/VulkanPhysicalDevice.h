@@ -19,7 +19,13 @@ private:
     VkPhysicalDevice mPhysicalDevice;
     VulkanHelper::QueueFamilyIndices mQueueFamilies;
     VulkanHelper::SwapChainSupportDetails mSwapChainDetails;
-    /* data */
+
+    VulkanHelper::QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
+    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+    VulkanHelper::SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
+    bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface);
+    VkPhysicalDevice FindGraphicsDevice(VkInstance instance, VkSurfaceKHR surface);
+
 };
 
 #endif
