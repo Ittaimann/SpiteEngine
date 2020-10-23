@@ -13,7 +13,7 @@ public:
     void init(bool validation);
     void cleanup();
 
-    VkInstance getVulkanInstance();
+    VkInstance getInstance();
 private:
     VkInstance mInstance; // the instance
     VkDebugUtilsMessengerEXT mDebugMessenger;

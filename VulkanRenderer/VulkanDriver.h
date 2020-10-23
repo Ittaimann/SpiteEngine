@@ -10,6 +10,7 @@
 #include "VulkanCommandPool.h"
 #include "VulkanSurface.h"
 #include "VulkanSwapChain.h"
+#include "vk_mem_alloc.h" //TODO: figure out why this needs to be dupped in cpp and here
 
 class WindowManager;
 
@@ -31,6 +32,8 @@ private:
     VulkanSurface mSurface;
     VulkanCommandPool mCommandPool;
     VulkanSwapChain mSwapChain;
+    VmaAllocator mAllocator;
+
 };
 
 

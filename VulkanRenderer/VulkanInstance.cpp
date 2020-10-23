@@ -130,7 +130,7 @@ void VulkanInstance::cleanup()
     vkDestroyInstance(mInstance, nullptr);
 }
 
-VkInstance VulkanInstance::getVulkanInstance()
+VkInstance VulkanInstance::getInstance()
 {
     return mInstance;
 }

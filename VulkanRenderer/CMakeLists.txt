@@ -14,4 +14,5 @@ add_library(
     VulkanSwapChain.cpp
     VulkanBuffer.cpp
 )
+
 target_link_libraries(VulkanDriver glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)
