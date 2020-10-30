@@ -4,7 +4,7 @@
 
 
 //NEXT: create a vulkan buffer class, then start trying to load a model into that
-//So buffers => resource => into buffers => graphics pipeline
+//So buffers(done) => resource => into buffers(maybe make a vertexBuffer class) => graphics pipeline
 //Then build vulkan texture class to allocate frame buffers from.
 //once the graphics pipeline is all done revisit window resize.
 // The camera

@@ -10,7 +10,7 @@
 #include "VulkanCommandPool.h"
 #include "VulkanSurface.h"
 #include "VulkanSwapChain.h"
-#include "vk_mem_alloc.h" //TODO: figure out why this needs to be dupped in cpp and here
+#include "vk_mem_alloc.h" //TODO: figure out why this needs to be dupped in cpp and here, probably need a precompile header
 
 class WindowManager;
 

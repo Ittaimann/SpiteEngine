@@ -35,6 +35,7 @@ void VulkanDriver::cleanup()
 {
     mCommandPool.cleanup(mDevice.getDevice());
     mSwapChain.cleanup(mDevice.getDevice());
+    vmaDestroyAllocator(mAllocator);
     mDevice.cleanup();
     mSurface.cleanup(mInstance.getInstance());
     mInstance.cleanup();
