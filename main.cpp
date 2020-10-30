@@ -1,5 +1,6 @@
 #define GLFW_INCLUDE_VULKAN //uh maybe a different place?
 #include "WindowManager.h"
+#include "Loader.h"
 #include "VulkanRenderer/VulkanDriver.h"
 
 
