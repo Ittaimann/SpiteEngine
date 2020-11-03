@@ -9,17 +9,19 @@
 // what I want back is a constructed model data with maybe some amount of meta data?
 // for now just get the raw array of data, and model info.
 
-// TODO: make a generic model class.
-
+//TODO: generic resource class that we can load from? I feel like i'm underbaking this and am going to need to redo this
+//Maybe have it be a resource/scene files and have it be full of meta data that we then interpret and factory build from?
+// This quickly may be the most biggerest thing.
 
 #include <string>
+#include "modelLoad.h"
 
 class Loader
 {
 public:
-    void loadModel(const std::string& file); //optimize: could probably char* this and remove string in header
+    ModelLoad loadModel(const std::string& file); //optimize: could probably char* this and remove string in header
 private:
-    void loadGltfModel(const std::string& path);
+    ModelLoad loadGltfModel(const std::string& path);
 };
 
 #endif

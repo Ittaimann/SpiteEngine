@@ -5,7 +5,8 @@
 
 
 //NEXT: create a vulkan buffer class, then start trying to load a model into that
-//So buffers(done) => resource(need to build the loading) => into buffers(maybe make a vertexBuffer class) => graphics pipeline
+//So buffers(done) => resource(need to expand,fix, and go back to... but done for now) => into buffers
+//(maybe make a vertexBuffer class) => graphics pipeline
 //Then build vulkan texture class to allocate frame buffers from.
 //once the graphics pipeline is all done revisit window resize.
 // The camera
@@ -14,7 +15,7 @@
 int main()
 {
     Loader loader;
-    loader.loadModel("../../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
+    ModelLoad loaded = loader.loadModel("../../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
     //TODO: config file
     WindowManager window;
     window.init(480,320);
@@ -23,7 +24,7 @@ int main()
     
     VulkanDriver driver;
     driver.init(validation,&window);
-
+    //driver.CreateModel(loaded); //
 //TODO: render loop and exit from glfw input
     while(false)
     {

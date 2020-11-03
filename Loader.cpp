@@ -9,12 +9,11 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define TINYGLTF_NOEXCEPTION
 #define JSON_NOEXCEPTION
-
 #include "ThirdParty/tiny_gltf.h"
 #include "ThirdParty/json.hpp"
 
 
-void Loader::loadModel(const std::string& file)
+ModelLoad Loader::loadModel(const std::string& file)
 {
     std::cout << "Current path is " << std::filesystem::current_path() << std::endl;
 
@@ -23,21 +22,21 @@ void Loader::loadModel(const std::string& file)
     //Loader: definitly going to want to revisit this entire concept. Probably going to need to find a way to map string to enum?
     if(extenstion == "gltf")
     {
-        loadGltfModel(file);
+       return loadGltfModel(file);
     }
     else{
         assert(false && "need to implement other model formats");
     }
 
 }
-
-void Loader::loadGltfModel(const std::string& path)
+//Loader: build an error case for this
+ModelLoad Loader::loadGltfModel(const std::string& path)
 {
- tinygltf::TinyGLTF loader;
+  tinygltf::TinyGLTF loader;
   std::string err;
   std::string warn;
-  tinygltf::Model model;
-  bool res = loader.LoadASCIIFromFile(&model, &err, &warn, path.c_str());
+  tinygltf::Model TinyModel;
+  bool res = loader.LoadASCIIFromFile(&TinyModel, &err, &warn, path.c_str());
   if (!warn.empty()) {
     std::cout << "WARN: " << warn << std::endl;
   }
@@ -46,9 +45,14 @@ void Loader::loadGltfModel(const std::string& path)
     std::cout << "ERR: " << err << std::endl;
   }
 
-  if (!res)
+  if (!res){
     std::cout << "Failed to load glTF: " << path.c_str() << std::endl;
-  else
+  }
+  else{
     std::cout << "Loaded glTF: " << path.c_str() << std::endl;
+  }
 
+  ModelLoad result;
+  result.setData(TinyModel.buffers[0].data);
+  return result;
 }
