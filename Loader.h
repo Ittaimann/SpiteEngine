@@ -2,7 +2,7 @@
 #define LOADER_H
 
 //Loader: define a data format interface for getting and breaking down generic file formats to my own
-// for now this can exist as a sudo loader, and when I'm ready I can build my own format and this will load those
+// for now this can exist as a pseudo loader, and when I'm ready I can build my own format and this will load those
 // for now just treat it as a middle man to tinygltf
 // For now I should be able to say "loader get ____ data, and it should go to tinygltf and get the appropriate data"
 // then when I'm done with it close the file handle and all that.
@@ -16,7 +16,10 @@
 
 class Loader
 {
-    void loadModel(std::string path); //optimize: could probably char* this
+public:
+    void loadModel(const std::string& file); //optimize: could probably char* this and remove string in header
+private:
+    void loadGltfModel(const std::string& path);
 };
 
 #endif

@@ -5,7 +5,7 @@
 
 
 //NEXT: create a vulkan buffer class, then start trying to load a model into that
-//So buffers(done) => resource => into buffers(maybe make a vertexBuffer class) => graphics pipeline
+//So buffers(done) => resource(need to build the loading) => into buffers(maybe make a vertexBuffer class) => graphics pipeline
 //Then build vulkan texture class to allocate frame buffers from.
 //once the graphics pipeline is all done revisit window resize.
 // The camera
@@ -13,7 +13,8 @@
 // TODO: get a code review...
 int main()
 {
-
+    Loader loader;
+    loader.loadModel("../../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
     //TODO: config file
     WindowManager window;
     window.init(480,320);
