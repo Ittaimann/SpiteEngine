@@ -24,6 +24,7 @@ int main()
     
     VulkanDriver driver;
     driver.init(validation,&window);
+    driver.buildModel(&loaded);
     //driver.CreateModel(loaded); //
 //TODO: render loop and exit from glfw input
     while(false)

@@ -13,6 +13,7 @@
 #include "vk_mem_alloc.h" //TODO: figure out why this needs to be dupped in cpp and here, probably need a precompile header
 
 class WindowManager;
+class ModelLoad;
 
 class VulkanDriver
 {
@@ -22,6 +23,8 @@ public:
 
     void init(bool validation,WindowManager* window);
     void cleanup();
+
+    void buildModel(ModelLoad* model);
 private:
 
     VulkanInstance mInstance;
@@ -32,8 +35,7 @@ private:
     VulkanSurface mSurface;
     VulkanCommandPool mCommandPool;
     VulkanSwapChain mSwapChain;
-    VmaAllocator mAllocator;
-
+    VmaAllocator mAllocator;// optimize: maybe switch this to be a pointer and foward declare.
 };
 
 

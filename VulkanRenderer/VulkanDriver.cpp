@@ -3,6 +3,8 @@
 #include "vk_mem_alloc.h"
 #include "WindowManager.h"
 
+#include "VulkanVertexBuffer.h"
+
 
 
 VulkanDriver::VulkanDriver()
@@ -41,4 +43,9 @@ void VulkanDriver::cleanup()
     mInstance.cleanup();
 }
 
+void VulkanDriver::buildModel(ModelLoad* model)
+{
+    VulkanVertexBuffer vertexBuffer;
+    vertexBuffer.init(model,&mAllocator);
+}
 

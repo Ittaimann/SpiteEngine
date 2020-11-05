@@ -13,6 +13,7 @@ add_library(
     VulkanPhysicalDevice.cpp
     VulkanSwapChain.cpp
     VulkanBuffer.cpp
+    VulkanVertexBuffer.cpp
 )
 
 target_link_libraries(VulkanDriver glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)
