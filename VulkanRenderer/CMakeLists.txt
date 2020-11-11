@@ -4,7 +4,7 @@ find_package(Vulkan REQUIRED)
 
 add_library(
     VulkanDriver 
-    VulkanDriver.cpp
+    VulkanRenderer.cpp
     VulkanInstance.cpp
     VulkanDevice.cpp
     VulkanCommandPool.cpp
@@ -14,6 +14,8 @@ add_library(
     VulkanSwapChain.cpp
     VulkanBuffer.cpp
     VulkanVertexBuffer.cpp
+    VulkanImage.cpp
+    VulkanRenderPass.cpp
 )
 
 target_link_libraries(VulkanDriver glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)

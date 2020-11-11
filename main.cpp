@@ -1,7 +1,7 @@
 #define GLFW_INCLUDE_VULKAN //uh maybe a different place?
 #include "WindowManager.h"
 #include "Loader.h"
-#include "VulkanRenderer/VulkanDriver.h"
+#include "VulkanRenderer/VulkanRenderer.h"
 
 
 //NEXT: create a vulkan buffer class, then start trying to load a model into that
@@ -22,10 +22,10 @@ int main()
     
     bool validation = true;
     
-    VulkanDriver driver;
-    driver.init(validation,&window);
-    driver.buildModel(&loaded);
-    //driver.CreateModel(loaded); //
+    VulkanRenderer renderer;
+    renderer.init(validation,&window);
+    renderer.buildModel(&loaded);
+    renderer.buildRenderPass();
 //TODO: render loop and exit from glfw input
     while(false)
     {
@@ -33,7 +33,7 @@ int main()
         // driver? nah hold it in the obejct? get to this in friendo and see
         //driver.draw();
     }
-    driver.cleanup();
+    renderer.cleanup();
     
     window.cleanup();
     return 1;

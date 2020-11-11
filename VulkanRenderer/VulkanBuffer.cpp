@@ -21,7 +21,7 @@ void VulkanBuffer::init(VmaAllocator allocator, void *data, uint32_t size, VkBuf
 
     VmaAllocationCreateInfo allocInfo = {};
     allocInfo.usage = VmaUsage;
-
+    allocInfo.pUserData = data;
     VkResult result = vmaCreateBuffer(allocator, &bufferInfo, &allocInfo, &mBuffer, &mVmaAlloc, nullptr);
     assert(result == VK_SUCCESS);
 

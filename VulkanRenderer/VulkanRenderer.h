@@ -1,5 +1,5 @@
-#ifndef VULKAN_DRIVER_H
-#define VULKAN_DRIVER_H
+#ifndef VULKAN_RENDERER_H
+#define VULKAN_RENDERER_H
 
 
 #include "VulkanHelpers.h"
@@ -15,16 +15,18 @@
 class WindowManager;
 class ModelLoad;
 
-class VulkanDriver
+class VulkanRenderer
 {
 public:
-    VulkanDriver();
-    ~VulkanDriver();
+    VulkanRenderer();
+    ~VulkanRenderer();
 
     void init(bool validation,WindowManager* window);
     void cleanup();
 
     void buildModel(ModelLoad* model);
+    void buildRenderPass();
+
 private:
 
     VulkanInstance mInstance;

@@ -1,18 +1,18 @@
-#include "VulkanDriver.h"
+#include "VulkanRenderer.h"
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 #include "WindowManager.h"
 
 #include "VulkanVertexBuffer.h"
+#include "VulkanRenderPass.h"
 
 
-
-VulkanDriver::VulkanDriver()
+VulkanRenderer::VulkanRenderer()
 {}
-VulkanDriver::~VulkanDriver()
+VulkanRenderer::~VulkanRenderer()
 {}
 
-void VulkanDriver::init(bool validation, WindowManager *window)
+void VulkanRenderer::init(bool validation, WindowManager *window)
 {
     mInstance.init(validation);
     mSurface.init(mInstance.getInstance(), window->getWindow());
@@ -33,7 +33,7 @@ void VulkanDriver::init(bool validation, WindowManager *window)
 
 }
 
-void VulkanDriver::cleanup()
+void VulkanRenderer::cleanup()
 {
     mCommandPool.cleanup(mDevice.getDevice());
     mSwapChain.cleanup(mDevice.getDevice());
@@ -43,9 +43,14 @@ void VulkanDriver::cleanup()
     mInstance.cleanup();
 }
 
-void VulkanDriver::buildModel(ModelLoad* model)
+void VulkanRenderer::buildModel(ModelLoad* model)
 {
     VulkanVertexBuffer vertexBuffer;
     vertexBuffer.init(model,&mAllocator);
 }
 
+void VulkanRenderer::buildRenderPass()
+{
+    VulkanRenderPass renderPass;
+    renderPass.init(mDevice.getDevice());
+}

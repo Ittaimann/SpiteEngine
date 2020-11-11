@@ -20,14 +20,15 @@ ModelLoad Loader::loadModel(const std::string& file)
     int extensionLoc = file.rfind("."); //Loader: might want a better less failure possible way to do this
     std::string extenstion = file.substr(extensionLoc+1);
     //Loader: definitly going to want to revisit this entire concept. Probably going to need to find a way to map string to enum?
+    ModelLoad result;
     if(extenstion == "gltf")
     {
-       return loadGltfModel(file);
+       result = loadGltfModel(file);
     }
     else{
         assert(false && "need to implement other model formats");
     }
-
+  return result ;
 }
 //Loader: build an error case for this
 ModelLoad Loader::loadGltfModel(const std::string& path)
