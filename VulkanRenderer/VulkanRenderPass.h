@@ -13,6 +13,7 @@ public:
     void cleanup();
 private:
     VkRenderPass mRenderPass; //Consider turning this into a cache
+    VkDevice mDevice;
 };
 
 #endif
