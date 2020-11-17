@@ -11,6 +11,8 @@ public:
 
     void init(VkDevice device);
     void cleanup();
+
+    VkRenderPass getRenderPass() const;
 private:
     VkRenderPass mRenderPass; //Consider turning this into a cache
     VkDevice mDevice;

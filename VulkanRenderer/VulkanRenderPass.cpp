@@ -1,5 +1,5 @@
 #include "VulkanRenderPass.h"
-
+#include <assert.h>
 //https://www.saschawillems.de/blog/2018/07/19/vulkan-input-attachments-and-sub-passes/
 VulkanRenderPass::VulkanRenderPass()
 {
@@ -65,9 +65,15 @@ void VulkanRenderPass::init(VkDevice device)
     renderPassInfo.dependencyCount = 0;  // what is this?
     renderPassInfo.pDependencies = nullptr;
 
-    vkCreateRenderPass(device, &renderPassInfo, nullptr, &mRenderPass);
+    VkResult result = vkCreateRenderPass(device, &renderPassInfo, nullptr, &mRenderPass);
+    assert(result == VK_SUCCESS);
 }
 void VulkanRenderPass::cleanup()
 {
     vkDestroyRenderPass(mDevice,mRenderPass,nullptr);
+}
+
+VkRenderPass VulkanRenderPass::getRenderPass() const
+{
+    return mRenderPass;
 }

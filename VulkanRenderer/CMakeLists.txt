@@ -16,6 +16,7 @@ add_library(
     VulkanVertexBuffer.cpp
     VulkanImage.cpp
     VulkanRenderPass.cpp
+    VulkanFramebuffer.cpp
 )
 
 target_link_libraries(VulkanDriver glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)

@@ -55,7 +55,7 @@ void VulkanSwapChain::init(VkDevice device, VkSurfaceKHR surface, const VulkanHe
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
     VkResult result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &mSwapChain);
-    assert(result ==VK_SUCCESS);
+    assert(result == VK_SUCCESS);
 
     vkGetSwapchainImagesKHR(device, mSwapChain, &imageCount, nullptr);
     mSwapChainImages.resize(imageCount);
@@ -63,10 +63,44 @@ void VulkanSwapChain::init(VkDevice device, VkSurfaceKHR surface, const VulkanHe
 
     mSwapChainImageFormat = surfaceFormat.format;
     mSwapChainExtent = extent;
+    createImageViews(device);
 }
+
 void VulkanSwapChain::cleanup(VkDevice device)
 {
-    vkDestroySwapchainKHR(device, mSwapChain, nullptr);//also clears the images
+    for (int i = 0; i < mSwapChainImages.size(); i++)
+    {
+        vkDestroyImageView(device,mSwapChainImageViews[i],nullptr);
+    }
+    vkDestroySwapchainKHR(device, mSwapChain, nullptr); //also clears the images
+}
+
+void VulkanSwapChain::createImageViews(VkDevice device)
+{
+    mSwapChainImageViews.resize(mSwapChainImages.size());
+    for (int i = 0; i < mSwapChainImages.size(); i++)
+    {
+        VkImageViewCreateInfo imageViewInfo{};
+        imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        imageViewInfo.image = mSwapChainImages[i];
+        imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        imageViewInfo.format = mSwapChainImageFormat;
+        imageViewInfo.components = {VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY };
+        imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageViewInfo.subresourceRange.baseMipLevel = 0;
+        imageViewInfo.subresourceRange.levelCount = 1;
+        imageViewInfo.subresourceRange.baseArrayLayer = 0;
+        imageViewInfo.subresourceRange.layerCount = 1;
+
+        VkResult result = vkCreateImageView(device, &imageViewInfo, nullptr, &mSwapChainImageViews[i]);
+        assert(result == VK_SUCCESS);
+    }
+}
+
+//TODO: figure out the rotating swap chain
+VkImageView VulkanSwapChain::getImageView(uint32_t swapChainIndex)
+{
+    return mSwapChainImageViews[swapChainIndex];
 }
 
 std::vector<VkImage> VulkanSwapChain::getSwapChainImages()
