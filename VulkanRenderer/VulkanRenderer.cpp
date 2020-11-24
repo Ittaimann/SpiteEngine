@@ -61,10 +61,8 @@ void VulkanRenderer::buildRenderPass(VulkanRenderPass &renderpass)
     renderpass.init(mDevice.getDevice());
 }
 
-VulkanFramebuffer VulkanRenderer::buildFramebuffer(uint32_t width, uint32_t height, const VulkanRenderPass &renderpass,const VulkanImage& bufferAttach /*,const std::vector<VkImageView>& imageViews*/)
+void VulkanRenderer::buildFramebuffer(VulkanFramebuffer& framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass,const VulkanImage& bufferAttach /*,const std::vector<VkImageView>& imageViews*/)
 {
-    VulkanFramebuffer framebuffer;
     std::vector<VkImageView> imageViews = {mSwapChain.getImageView(0), bufferAttach.getImageView()};
     framebuffer.init(mDevice.getDevice(), width, height, renderpass, imageViews);
-    return framebuffer;
 }

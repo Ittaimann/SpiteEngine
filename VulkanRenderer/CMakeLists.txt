@@ -17,6 +17,7 @@ add_library(
     VulkanImage.cpp
     VulkanRenderPass.cpp
     VulkanFramebuffer.cpp
+    VulkanGraphicsPipeline.cpp
 )
 
 target_link_libraries(VulkanDriver glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)

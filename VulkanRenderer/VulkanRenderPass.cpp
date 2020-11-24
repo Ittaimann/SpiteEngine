@@ -52,7 +52,7 @@ void VulkanRenderPass::init(VkDevice device)
     subPassDesc.pDepthStencilAttachment = &depth;
     subPassDesc.preserveAttachmentCount = 0;
     subPassDesc.pPreserveAttachments = nullptr;
-
+    
     //Knowledge: learn more about subpass and dependecies. seems strong 
     VkRenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -70,7 +70,10 @@ void VulkanRenderPass::init(VkDevice device)
 }
 void VulkanRenderPass::cleanup()
 {
-    vkDestroyRenderPass(mDevice,mRenderPass,nullptr);
+    if(mRenderPass != VK_NULL_HANDLE){
+        vkDestroyRenderPass(mDevice,mRenderPass,nullptr);
+        mRenderPass = VK_NULL_HANDLE;
+    }
 }
 
 VkRenderPass VulkanRenderPass::getRenderPass() const

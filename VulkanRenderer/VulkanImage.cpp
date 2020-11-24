@@ -9,8 +9,8 @@ VulkanImage::~VulkanImage()
     cleanup();
 }
 
-void VulkanImage::init(const VmaAllocator* allocator, VkDevice device, uint32_t width, uint32_t height, 
-                    VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect)
+void VulkanImage::init(const VmaAllocator *allocator, VkDevice device, uint32_t width, uint32_t height,
+                       VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect)
 {
     mAllocator = allocator;
     mDevice = device;
@@ -44,24 +44,31 @@ void VulkanImage::init(const VmaAllocator* allocator, VkDevice device, uint32_t 
     imageViewInfo.image = mImage;
     imageViewInfo.format = format;
     imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D; // TODO: base this on image type in future
-    imageViewInfo.components = {VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY };
+    imageViewInfo.components = {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY};
     imageViewInfo.subresourceRange.aspectMask = imageViewAspect;
     imageViewInfo.subresourceRange.baseArrayLayer = 0;
     imageViewInfo.subresourceRange.baseMipLevel = 0;
     imageViewInfo.subresourceRange.layerCount = 1;
     imageViewInfo.subresourceRange.levelCount = 1;
 
-    vkCreateImageView(device, &imageViewInfo,nullptr,&mImageView);
+    vkCreateImageView(device, &imageViewInfo, nullptr, &mImageView);
 }
 
 void VulkanImage::cleanup()
 {
-    vmaDestroyImage(*mAllocator, mImage, mVmaAlloc);
-    vkDestroyImageView(mDevice,mImageView,nullptr);
+    if (mImage != VK_NULL_HANDLE)
+    {
+        vmaDestroyImage(*mAllocator, mImage, mVmaAlloc);
+        mImage = VK_NULL_HANDLE;
+    }
+    if (mImageView != VK_NULL_HANDLE)
+    {
+        vkDestroyImageView(mDevice, mImageView, nullptr);
+        mImageView = VK_NULL_HANDLE;
+    }
 }
 
 VkImageView VulkanImage::getImageView() const
 {
     return mImageView;
 }
-

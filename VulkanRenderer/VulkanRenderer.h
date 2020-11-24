@@ -31,7 +31,7 @@ public:
     void buildModel(ModelLoad *model);
     void buildImage(VulkanImage& image, uint32_t width, uint32_t height, VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect);
     void buildRenderPass(VulkanRenderPass& renderpass);
-    VulkanFramebuffer buildFramebuffer(uint32_t width, uint32_t height,const VulkanRenderPass& renderpass,const VulkanImage& bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
+    void buildFramebuffer(VulkanFramebuffer& framebuffer, uint32_t width, uint32_t height,const VulkanRenderPass& renderpass,const VulkanImage& bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
 
 private:
     VulkanInstance mInstance;

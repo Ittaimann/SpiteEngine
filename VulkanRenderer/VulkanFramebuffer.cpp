@@ -28,5 +28,8 @@ void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height,co
 
 void VulkanFramebuffer::cleanup()
 {
-    vkDestroyFramebuffer(mDevice,mFramebuffer,nullptr);
+    if(mFramebuffer != VK_NULL_HANDLE){
+        vkDestroyFramebuffer(mDevice,mFramebuffer,nullptr);
+        mFramebuffer = VK_NULL_HANDLE;
+    }
 }
