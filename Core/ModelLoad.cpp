@@ -1,4 +1,4 @@
-#include "modelLoad.h"
+#include "ModelLoad.h"
 
 const std::vector<unsigned char>& ModelLoad::getData() const
 {

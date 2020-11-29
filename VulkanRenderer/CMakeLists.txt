@@ -1,7 +1,6 @@
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
 
-
 add_library(
     VulkanDriver 
     VulkanRenderer.cpp
@@ -18,6 +17,7 @@ add_library(
     VulkanRenderPass.cpp
     VulkanFramebuffer.cpp
     VulkanGraphicsPipeline.cpp
+    VulkanShader.cpp
 )
 
 target_link_libraries(VulkanDriver glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)

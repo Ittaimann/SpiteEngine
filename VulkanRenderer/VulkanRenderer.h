@@ -11,10 +11,11 @@
 #include "VulkanSwapChain.h"
 #include "vk_mem_alloc.h" //TODO: figure out why this needs to be dupped in cpp and here, probably need a precompile header
 
-#include "VulkanImage.h"// TODO: could probably foward declare this instead
+#include "VulkanImage.h" // TODO: could probably foward declare this instead
 #include "VulkanRenderPass.h"
 #include "VulkanFramebuffer.h"
-
+#include "VulkanRenderPass.h"
+#include "VulkanGraphicsPipeline.h"
 
 class WindowManager;
 class ModelLoad;
@@ -29,9 +30,10 @@ public:
     void cleanup();
 
     void buildModel(ModelLoad *model);
-    void buildImage(VulkanImage& image, uint32_t width, uint32_t height, VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect);
-    void buildRenderPass(VulkanRenderPass& renderpass);
-    void buildFramebuffer(VulkanFramebuffer& framebuffer, uint32_t width, uint32_t height,const VulkanRenderPass& renderpass,const VulkanImage& bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
+    void buildImage(VulkanImage &image, uint32_t width, uint32_t height, VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect);
+    void buildRenderPass(VulkanRenderPass &renderpass);
+    void buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
+    void buildPipeline(VulkanGraphicsPipeline &pipeline, const VulkanRenderPass &renderpass);
 
 private:
     VulkanInstance mInstance;

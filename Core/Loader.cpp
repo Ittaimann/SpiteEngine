@@ -57,3 +57,28 @@ ModelLoad Loader::loadGltfModel(const std::string& path)
   result.setData(TinyModel.buffers[0].data);
   return result;
 }
+
+ShaderLoad Loader::loadShader(const std::string& path){
+  ShaderLoad result;
+  std::vector <char> Buffer = readFile(path);
+  result.setData(Buffer);
+  return result;
+}
+
+std::vector<char> Loader::readFile(const std::string& filename) {
+		std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+		if (!file.is_open()) {
+			throw std::runtime_error("failed to open file!");
+		}
+
+		size_t fileSize = (size_t)file.tellg();
+		std::vector<char> buffer(fileSize);
+
+		file.seekg(0);
+		file.read(buffer.data(), fileSize);
+
+		file.close();
+
+		return buffer;
+	}

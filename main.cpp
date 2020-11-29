@@ -1,14 +1,12 @@
 #define GLFW_INCLUDE_VULKAN //uh maybe a different place?
-#include "WindowManager.h"
-#include "Loader.h"
+#include "Core/WindowManager.h"
+#include "Core/Loader.h"
+//TODO: clean up this file so that we don't need to worry so much about including extra vulkan stuff
 #include "VulkanRenderer/VulkanRenderer.h"
 
 
-//TODO: remove these/generic these? also make sure that if we don't use vulkan don't include it?
-#include "VulkanRenderer/VulkanFramebuffer.h"
-#include "VulkanRenderer/VulkanRenderPass.h"
 
-//NEXT: framebuffer object=>SHADERS => graphics pipeline
+//NEXT: SHADERS => graphics pipeline
 //Then build vulkan texture class to allocate frame buffers from.
 //once the graphics pipeline is all done revisit window resize.
 // The camera
@@ -38,6 +36,8 @@ int main()
         renderer.buildImage(depthBuffer,480, 320, VK_FORMAT_D24_UNORM_S8_UINT, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
         VulkanFramebuffer framebuffer;
         renderer.buildFramebuffer(framebuffer,480,320,renderpass,depthBuffer);
+        VulkanGraphicsPipeline pipeline;
+        renderer.buildPipeline(pipeline,renderpass);
     }
 
 //TODO: render loop and exit from glfw input

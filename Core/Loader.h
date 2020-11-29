@@ -14,13 +14,16 @@
 // This quickly may be the most biggerest thing.
 
 #include <string>
-#include "modelLoad.h"
+#include "ModelLoad.h"
+#include "ShaderLoad.h"
 
 class Loader
 {
 public:
     ModelLoad loadModel(const std::string& file); //optimize: could probably char* this and remove string in header
+    ShaderLoad loadShader (const std::string& file); //TODO: add an online compile option.
 private:
+    std::vector<char> readFile(const std::string& filename);
     ModelLoad loadGltfModel(const std::string& path);
 };
 

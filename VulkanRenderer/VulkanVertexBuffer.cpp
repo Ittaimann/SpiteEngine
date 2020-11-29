@@ -1,6 +1,6 @@
 #include "VulkanVertexBuffer.h"
 #include "vk_mem_alloc.h"
-#include "modelLoad.h"
+#include "Core/ModelLoad.h"
 VulkanVertexBuffer::VulkanVertexBuffer() {}
 VulkanVertexBuffer::~VulkanVertexBuffer() {}
 void VulkanVertexBuffer::init(const ModelLoad *model, VmaAllocator *alloc)

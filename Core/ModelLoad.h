@@ -9,7 +9,6 @@
 // going to be the proper model class.
 class ModelLoad
 {
-
 public:
     const std::vector<unsigned char>& getData() const;
     const uint32_t getSize() const;
