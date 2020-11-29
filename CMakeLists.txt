@@ -15,5 +15,4 @@ include_directories(ThirdParty)
 add_subdirectory(VulkanRenderer)
 add_subdirectory(Core)
 add_executable(spite main.cpp)  
-#WindowManager.cpp Loader.cpp ModelLoad.cpp ShaderLoad.cpp
 target_link_libraries(spite VulkanDriver Core) 
