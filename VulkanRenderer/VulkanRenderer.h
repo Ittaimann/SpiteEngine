@@ -16,9 +16,11 @@
 #include "VulkanFramebuffer.h"
 #include "VulkanRenderPass.h"
 #include "VulkanGraphicsPipeline.h"
+#include "VulkanShader.h"
 
 class WindowManager;
 class ModelLoad;
+class ShaderLoad;
 
 class VulkanRenderer
 {
@@ -33,8 +35,8 @@ public:
     void buildImage(VulkanImage &image, uint32_t width, uint32_t height, VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect);
     void buildRenderPass(VulkanRenderPass &renderpass);
     void buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
-    void buildPipeline(VulkanGraphicsPipeline &pipeline, const VulkanRenderPass &renderpass);
-
+    void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
+    void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
 private:
     VulkanInstance mInstance;
     VulkanDevice mDevice;

@@ -2,6 +2,7 @@
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 #include "Core/WindowManager.h"
+#include "Core/ShaderLoad.h"
 
 #include "VulkanVertexBuffer.h"
 #include "VulkanRenderPass.h"
@@ -67,8 +68,12 @@ void VulkanRenderer::buildFramebuffer(VulkanFramebuffer& framebuffer, uint32_t w
     framebuffer.init(mDevice.getDevice(), width, height, renderpass, imageViews);
 }
 
-void VulkanRenderer::buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass)
+void VulkanRenderer::buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders)
 {
-    pipeline.init(mDevice.getDevice(),renderpass.getRenderPass());
+    pipeline.init(mDevice.getDevice(), renderpass.getRenderPass(), shaders);
+}
 
+void VulkanRenderer::buildShader(VulkanShader& shader, ShaderLoad* shaderText)
+{
+    shader.init(mDevice.getDevice(),shaderText->getSize(),shaderText->getData());
 }

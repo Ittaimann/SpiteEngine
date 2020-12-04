@@ -6,7 +6,7 @@
 
 
 
-//NEXT: SHADERS => graphics pipeline
+//NEXT: graphics pipeline
 //Then build vulkan texture class to allocate frame buffers from.
 //once the graphics pipeline is all done revisit window resize.
 // The camera
@@ -14,13 +14,17 @@
 // TODO: get a code review...
 int main()
 {
-    Loader loader;
-    ModelLoad loaded = loader.loadModel("../../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
-    //TODO: config file
+    bool validation = true;
     WindowManager window;
     window.init(480,320);
+
+    Loader loader;
+    ModelLoad loaded = loader.loadModel("../../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
+    ShaderLoad vert = loader.loadShader("../../AssetCache/vert.spv");
+    ShaderLoad frag = loader.loadShader("../../AssetCache/frag.spv");
     
-    bool validation = true;
+    //TODO: config file
+    
     
     VulkanRenderer renderer;
     renderer.init(validation,&window);
@@ -37,7 +41,11 @@ int main()
         VulkanFramebuffer framebuffer;
         renderer.buildFramebuffer(framebuffer,480,320,renderpass,depthBuffer);
         VulkanGraphicsPipeline pipeline;
-        renderer.buildPipeline(pipeline,renderpass);
+        std::vector<VulkanShader> shaders(2);
+        renderer.buildShader(shaders[0],&vert);
+        renderer.buildShader(shaders[1],&frag);
+
+        renderer.buildPipeline(pipeline,renderpass,shaders);
     }
 
 //TODO: render loop and exit from glfw input

@@ -9,7 +9,7 @@ VulkanShader::~VulkanShader()
     cleanup();
 }
 
-void VulkanShader::init(VkDevice device, uint32_t size, void* code)
+void VulkanShader::init(VkDevice device, uint32_t size,const void* code)
 {
     mDevice = device;
     VkShaderModuleCreateInfo shaderModuleInfo = {};
@@ -23,10 +23,14 @@ void VulkanShader::init(VkDevice device, uint32_t size, void* code)
 
 void VulkanShader::cleanup()
 {
-    vkDestroyShaderModule(mDevice,mShaderModule,nullptr);
+    if(mShaderModule!=VK_NULL_HANDLE){
+        vkDestroyShaderModule(mDevice,mShaderModule,nullptr);
+        mShaderModule = VK_NULL_HANDLE;
+    }
 }
 
-VkShaderModule VulkanShader::getShaderModule()
+VkShaderModule VulkanShader::getShaderModule() const
 {
     return mShaderModule;
 }
+ 

@@ -10,10 +10,10 @@ public:
 VulkanShader();
 ~VulkanShader();
 
-void init(VkDevice device, uint32_t size, void* code);
+void init(VkDevice device, uint32_t size, const void* code);
 void cleanup();
 
-VkShaderModule getShaderModule();
+VkShaderModule getShaderModule() const;
 
 private:
 VkShaderModule mShaderModule;

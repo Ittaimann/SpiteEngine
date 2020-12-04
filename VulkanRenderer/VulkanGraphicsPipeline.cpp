@@ -9,70 +9,12 @@ VulkanGraphicsPipeline::~VulkanGraphicsPipeline()
     cleanup();
 }
 
-void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass)
+void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass,const std::vector<VulkanShader>& shaders)
 {
     mDevice = device;
 
-    VkPipelineShaderStageCreateInfo shaderStages = createShaderStageInfo();
-    VkPipelineVertexInputStateCreateInfo vertexState = createVertexInputStateInfo();
-    VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = createInputAssemblyStateInfo();
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages = createShaderStageInfo(shaders);
 
-    VkViewport viewport = {0, 0, 480, 320, 1, 1};
-    VkExtent2D extent = {480, 320};
-    VkOffset2D offset = {0, 0};
-    VkRect2D scissor = {offset, extent};
-    VkPipelineViewportStateCreateInfo viewportState = createViewportStateInfo(viewport, scissor);
-    VkPipelineRasterizationStateCreateInfo rasterizationState = createRasterizationStateInfo();
-    VkPipelineMultisampleStateCreateInfo multiSampleState = createMultiSampleStateInfo();
-    VkPipelineDepthStencilStateCreateInfo depthStencilState = createDepthStencilStateInfo();
-    VkPipelineColorBlendStateCreateInfo colorBlendState = createColorBlendStateInfo();
-    VkGraphicsPipelineCreateInfo pipelineInfo = {};
-    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.pNext = nullptr;
-    pipelineInfo.flags = 0;
-    pipelineInfo.stageCount = 1;          // hard coded for vertex stuff
-    pipelineInfo.pStages = &shaderStages; // TODO: ACTUALLY MAKE SHADER UNITS
-    pipelineInfo.pVertexInputState = &vertexState;
-    pipelineInfo.pInputAssemblyState = &inputAssemblyState;
-    pipelineInfo.pTessellationState = nullptr;
-    //TODO: everything below this point.
-    pipelineInfo.pViewportState = &viewportState;
-    pipelineInfo.pRasterizationState = &rasterizationState;
-    pipelineInfo.pMultisampleState = &multiSampleState;
-    pipelineInfo.pDepthStencilState = &depthStencilState;
-    pipelineInfo.pColorBlendState = &colorBlendState;
-    pipelineInfo.pDynamicState = NULL;
-    pipelineInfo.layout = nullptr;
-    pipelineInfo.renderPass = renderpass;
-    pipelineInfo.subpass = 0;
-    pipelineInfo.basePipelineHandle = nullptr;
-    pipelineInfo.basePipelineIndex = 0;
-
-    vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &mPipeline);
-}
-
-void VulkanGraphicsPipeline::cleanup()
-{
-    vkDestroyPipeline(mDevice, mPipeline, nullptr);
-}
-
-VkPipelineShaderStageCreateInfo VulkanGraphicsPipeline::createShaderStageInfo()
-{
-    VkPipelineShaderStageCreateInfo pipelineShaderStageInfo = {};
-    pipelineShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    pipelineShaderStageInfo.pNext = nullptr;
-    pipelineShaderStageInfo.flags = 0;
-    pipelineShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    pipelineShaderStageInfo.module = VK_NULL_HANDLE;
-    pipelineShaderStageInfo.pName = "Uh... shader mc shader face";
-    pipelineShaderStageInfo.pSpecializationInfo = nullptr;
-    return pipelineShaderStageInfo;
-}
-
-VkPipelineVertexInputStateCreateInfo VulkanGraphicsPipeline::createVertexInputStateInfo()
-{
-    //TODO: move this to model creation and store in model? This also will be deallocated as part of this stack
-    // move this out or something pls;
     VkVertexInputBindingDescription vertexInputBindingInfo = {}; // vertex buffer info
     vertexInputBindingInfo.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
     vertexInputBindingInfo.binding = 0; //ooofers
@@ -84,6 +26,100 @@ VkPipelineVertexInputStateCreateInfo VulkanGraphicsPipeline::createVertexInputSt
     vertexInputAttributeInfo.format = VK_FORMAT_R32G32B32_SFLOAT;
     vertexInputAttributeInfo.offset = 0;
 
+
+    VkPipelineVertexInputStateCreateInfo vertexState = createVertexInputStateInfo(vertexInputBindingInfo,vertexInputAttributeInfo);
+    VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = createInputAssemblyStateInfo();
+
+    VkViewport viewport = {0, 0, 480, 320, 1, 1};
+    VkExtent2D extent = {480, 320};
+    VkOffset2D offset = {0, 0};
+    VkRect2D scissor = {offset, extent};
+    VkPipelineViewportStateCreateInfo viewportState = createViewportStateInfo(viewport, scissor);
+    VkPipelineRasterizationStateCreateInfo rasterizationState = createRasterizati1onStateInfo();
+    VkPipelineMultisampleStateCreateInfo multiSampleState = createMultiSampleStateInfo();
+    VkPipelineDepthStencilStateCreateInfo depthStencilState = createDepthStencilStateInfo();
+
+
+    //TODO: these blends will probably need to be controlled by my meta shader data. interesting its per attachment, might make it difficult. maybe need to make a rendergraph and have a dependency check
+    std::vector<VkPipelineColorBlendAttachmentState> blendAttachments(1);
+    for(int i = 0; i< blendAttachments.size();i++)
+    {
+        blendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        blendAttachments[i].blendEnable = VK_FALSE;
+        blendAttachments[i].srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+        blendAttachments[i].dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+        blendAttachments[i].colorBlendOp = VK_BLEND_OP_ADD; // Optional
+        blendAttachments[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+        blendAttachments[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+        blendAttachments[i].alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+    }
+    VkPipelineColorBlendStateCreateInfo colorBlendState = createColorBlendStateInfo(blendAttachments);
+
+    VkGraphicsPipelineCreateInfo pipelineInfo = {};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.pNext = nullptr;
+    pipelineInfo.flags = 0;
+    pipelineInfo.stageCount = 1;          // hard coded for vertex stuff
+    pipelineInfo.pStages = shaderStages.data(); // TODO: ACTUALLY MAKE SHADER UNITS
+    pipelineInfo.pVertexInputState = &vertexState;
+    pipelineInfo.pInputAssemblyState = &inputAssemblyState;
+    pipelineInfo.pTessellationState = nullptr;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizationState;
+    pipelineInfo.pMultisampleState = &multiSampleState;
+    pipelineInfo.pDepthStencilState = &depthStencilState;
+    pipelineInfo.pColorBlendState = &colorBlendState;
+    pipelineInfo.pDynamicState = NULL;
+
+    //NEXT: REMOVE THIS SO WE CAN ACTUALLY LOAD UNIFORMS
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = 0; // Optional
+    pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+    pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+    pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+    VkPipelineLayout lol;
+    vkCreatePipelineLayout(device,&pipelineLayoutInfo,nullptr,&lol);
+
+
+    pipelineInfo.layout = lol;
+    pipelineInfo.renderPass = renderpass;
+    pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = nullptr;
+    pipelineInfo.basePipelineIndex = 0;
+
+    vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &mPipeline);
+
+    //TODO: REMOVE THIS NONSENSE
+    vkDestroyPipelineLayout(device,lol,nullptr);
+}
+
+void VulkanGraphicsPipeline::cleanup()
+{
+    vkDestroyPipeline(mDevice, mPipeline, nullptr);
+}
+
+std::vector<VkPipelineShaderStageCreateInfo> VulkanGraphicsPipeline::createShaderStageInfo(const std::vector<VulkanShader>& shaders)
+{
+    std::vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageInfo(shaders.size());
+    for(int i = 0; i<shaders.size(); i++)
+    {
+        pipelineShaderStageInfo[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        pipelineShaderStageInfo[i].pNext = nullptr;
+        pipelineShaderStageInfo[i].flags = 0;
+        pipelineShaderStageInfo[i].module = shaders[i].getShaderModule();
+        pipelineShaderStageInfo[i].pName = "main";
+        pipelineShaderStageInfo[i].pSpecializationInfo = nullptr;
+    }
+    pipelineShaderStageInfo[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+    pipelineShaderStageInfo[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    return pipelineShaderStageInfo;
+}
+
+    //TODO: move this to model creation and store in some kind of map? no need to recreate this on the model every time. also one of these is not model specific (instance data)
+VkPipelineVertexInputStateCreateInfo VulkanGraphicsPipeline::createVertexInputStateInfo(VkVertexInputBindingDescription& vertexInputBindingInfo, VkVertexInputAttributeDescription& vertexInputAttributeInfo)
+{
     VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
     vertexInputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputStateInfo.pNext = nullptr;
@@ -183,7 +219,7 @@ VkPipelineDepthStencilStateCreateInfo VulkanGraphicsPipeline::createDepthStencil
     return depthStencilStateInfo;
 }
 
-VkPipelineColorBlendStateCreateInfo VulkanGraphicsPipeline::createColorBlendStateInfo()
+VkPipelineColorBlendStateCreateInfo VulkanGraphicsPipeline::createColorBlendStateInfo(const std::vector<VkPipelineColorBlendAttachmentState>& blendAttachments)
 {
     VkPipelineColorBlendStateCreateInfo blendStateInfo = {};
     blendStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -191,8 +227,8 @@ VkPipelineColorBlendStateCreateInfo VulkanGraphicsPipeline::createColorBlendStat
     blendStateInfo.flags = 0;
     blendStateInfo.logicOpEnable = VK_FALSE;
     blendStateInfo.logicOp = VK_LOGIC_OP_AND;
-    blendStateInfo.attachmentCount = 2;
-    blendStateInfo.pAttachments = nullptr; // OH FUCK REALLY?
+    blendStateInfo.attachmentCount = 1;
+    blendStateInfo.pAttachments =blendAttachments.data();
 
     blendStateInfo.blendConstants[0] = 1.0f;
     blendStateInfo.blendConstants[1] = 1.0f;
