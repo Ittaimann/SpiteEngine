@@ -8,15 +8,16 @@ class WindowManager
 public:
     WindowManager();
     ~WindowManager();
-     void init(uint32_t width, uint32_t height);
-     void cleanup();
+    void init(uint32_t width, uint32_t height);
+    void cleanup();
 
-     GLFWwindow* getWindow();
+    GLFWwindow* getWindow();
 
     // //could probably pair these
-     uint32_t getWidth();
-     uint32_t getHeight();
-
+    uint32_t getWidth();
+    uint32_t getHeight();
+    bool getWindowClosed();
+    void pollEvents();
 private:
     GLFWwindow* mWindow;
     uint32_t mWidth;

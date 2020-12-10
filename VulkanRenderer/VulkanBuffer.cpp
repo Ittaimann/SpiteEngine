@@ -33,3 +33,8 @@ void VulkanBuffer::cleanup(VmaAllocator allocator)
 {
     vmaDestroyBuffer(allocator, mBuffer, mVmaAlloc);
 }
+
+VkBuffer& VulkanBuffer::getBuffer()
+{
+    return mBuffer;
+}

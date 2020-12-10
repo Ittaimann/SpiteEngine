@@ -6,12 +6,15 @@
 class VulkanCommandPool
 {
 public:
-    VulkanCommandPool(/* args */);
+    VulkanCommandPool();
     ~VulkanCommandPool();
     void init(VkDevice device, uint32_t graphicsFamily);
     void cleanup(VkDevice device);
+
+    VkCommandBuffer getCommandBuffer();
 private:
     VkCommandPool mCommandPool;
+    VkCommandBuffer mCommandBuffer; // TODO: do a proper pool of these. 
 };
 
 #endif

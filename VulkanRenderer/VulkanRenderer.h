@@ -17,6 +17,7 @@
 #include "VulkanRenderPass.h"
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanShader.h"
+#include "VulkanVertexBuffer.h"
 
 class WindowManager;
 class ModelLoad;
@@ -31,12 +32,24 @@ public:
     void init(bool validation, WindowManager *window);
     void cleanup();
 
-    void buildModel(ModelLoad *model);
+    void buildModel(VulkanVertexBuffer& vertexBuffer, ModelLoad *model);
     void buildImage(VulkanImage &image, uint32_t width, uint32_t height, VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect);
     void buildRenderPass(VulkanRenderPass &renderpass);
     void buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
     void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
     void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
+
+    void beginFrame();
+    void endFrame();
+    void beginRenderPass(VulkanRenderPass &renderpass, VulkanFramebuffer &framebuffer);
+    void endRenderPass();
+
+    void draw();
+
+    //TODO: const this down te whole at some point. this
+    void bindVertexBuffer(VulkanVertexBuffer& vertexBuffer);
+    void bindPipeline(VulkanGraphicsPipeline& pipeline);
+
 private:
     VulkanInstance mInstance;
     VulkanDevice mDevice;

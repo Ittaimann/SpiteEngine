@@ -22,7 +22,7 @@ void VulkanRenderPass::init(VkDevice device)
     attachmentDesc[0].format = VK_FORMAT_B8G8R8A8_UNORM;
     attachmentDesc[0].samples = VK_SAMPLE_COUNT_1_BIT; //msaa?
     attachmentDesc[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    attachmentDesc[0].finalLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL; // present this for now
+    attachmentDesc[0].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; //TODO: write to a back buffer, this is writing directly to swap chain
     attachmentDesc[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     attachmentDesc[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     attachmentDesc[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -40,7 +40,7 @@ void VulkanRenderPass::init(VkDevice device)
     attachmentDesc[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     VkAttachmentReference depth = {1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
 
-    //Knowledge: learn what each of these attachents are (specifically preserve?) 
+    //Knowledge: learn what each of these attachents are (specifically preserve?)
     VkSubpassDescription subPassDesc = {};
     subPassDesc.flags = 0;
     subPassDesc.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -52,8 +52,8 @@ void VulkanRenderPass::init(VkDevice device)
     subPassDesc.pDepthStencilAttachment = &depth;
     subPassDesc.preserveAttachmentCount = 0;
     subPassDesc.pPreserveAttachments = nullptr;
-    
-    //Knowledge: learn more about subpass and dependecies. seems strong 
+
+    //Knowledge: learn more about subpass and dependecies. seems strong
     VkRenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.flags = 0;
@@ -61,8 +61,8 @@ void VulkanRenderPass::init(VkDevice device)
     renderPassInfo.attachmentCount = 2; //color and depth
     renderPassInfo.pAttachments = attachmentDesc;
     renderPassInfo.subpassCount = 1;
-    renderPassInfo.pSubpasses = &subPassDesc; 
-    renderPassInfo.dependencyCount = 0;  // what is this?
+    renderPassInfo.pSubpasses = &subPassDesc;
+    renderPassInfo.dependencyCount = 0; // what is this?
     renderPassInfo.pDependencies = nullptr;
 
     VkResult result = vkCreateRenderPass(device, &renderPassInfo, nullptr, &mRenderPass);
@@ -70,8 +70,9 @@ void VulkanRenderPass::init(VkDevice device)
 }
 void VulkanRenderPass::cleanup()
 {
-    if(mRenderPass != VK_NULL_HANDLE){
-        vkDestroyRenderPass(mDevice,mRenderPass,nullptr);
+    if (mRenderPass != VK_NULL_HANDLE)
+    {
+        vkDestroyRenderPass(mDevice, mRenderPass, nullptr);
         mRenderPass = VK_NULL_HANDLE;
     }
 }

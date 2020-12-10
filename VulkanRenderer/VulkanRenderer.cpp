@@ -1,3 +1,4 @@
+#define GLFW_INCLUDE_VULKAN //uh maybe a different place?
 #include "VulkanRenderer.h"
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
@@ -45,14 +46,13 @@ void VulkanRenderer::cleanup()
     mInstance.cleanup();
 }
 
-void VulkanRenderer::buildModel(ModelLoad *model)
+void VulkanRenderer::buildModel(VulkanVertexBuffer &vertexBuffer, ModelLoad *model)
 {
-    VulkanVertexBuffer vertexBuffer;
     vertexBuffer.init(model, &mAllocator);
 }
 
 //TODO: expand this drastically, this will probably be a large amount of the texture builds
-void VulkanRenderer::buildImage(VulkanImage& image,uint32_t width, uint32_t height, VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect)
+void VulkanRenderer::buildImage(VulkanImage &image, uint32_t width, uint32_t height, VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect)
 {
     image.init(&mAllocator, mDevice.getDevice(), width, height, format, usage, imageViewAspect);
 }
@@ -62,18 +62,74 @@ void VulkanRenderer::buildRenderPass(VulkanRenderPass &renderpass)
     renderpass.init(mDevice.getDevice());
 }
 
-void VulkanRenderer::buildFramebuffer(VulkanFramebuffer& framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass,const VulkanImage& bufferAttach /*,const std::vector<VkImageView>& imageViews*/)
+void VulkanRenderer::buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/)
 {
     std::vector<VkImageView> imageViews = {mSwapChain.getImageView(0), bufferAttach.getImageView()};
     framebuffer.init(mDevice.getDevice(), width, height, renderpass, imageViews);
 }
 
-void VulkanRenderer::buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders)
+void VulkanRenderer::buildPipeline(VulkanGraphicsPipeline &pipeline, const VulkanRenderPass &renderpass, const std::vector<VulkanShader> &shaders)
 {
     pipeline.init(mDevice.getDevice(), renderpass.getRenderPass(), shaders);
 }
 
-void VulkanRenderer::buildShader(VulkanShader& shader, ShaderLoad* shaderText)
+void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText)
 {
-    shader.init(mDevice.getDevice(),shaderText->getSize(),shaderText->getData());
+    shader.init(mDevice.getDevice(), shaderText->getSize(), shaderText->getData());
+}
+
+//TODO: these imply only one command buffer, thats not how this is going to go.
+// we will probably want a command buffer abstract that has its own begins and ends.
+// request a command buffer struct that is stored inside of the commmandpool class that 
+// has all the needed extras (fences and semaphores?)
+void VulkanRenderer::beginFrame()
+{
+    VkCommandBufferBeginInfo commandBufferBeginInfo = {};
+    commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    commandBufferBeginInfo.pNext = nullptr;
+    commandBufferBeginInfo.pInheritanceInfo = nullptr;
+    commandBufferBeginInfo.flags = 0;
+    vkBeginCommandBuffer(mCommandPool.getCommandBuffer(), &commandBufferBeginInfo);
+}
+void VulkanRenderer::endFrame()
+{
+
+    vkEndCommandBuffer(mCommandPool.getCommandBuffer());
+}
+
+//TODO: tight renderpass and framebuffer together
+void VulkanRenderer::beginRenderPass(VulkanRenderPass &renderpass, VulkanFramebuffer &framebuffer)
+{
+    VkRenderPassBeginInfo renderPassBeginInfo = {};
+    renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassBeginInfo.pNext = nullptr;
+    renderPassBeginInfo.renderPass = renderpass.getRenderPass();
+    renderPassBeginInfo.framebuffer = framebuffer.getFramebuffer();
+    renderPassBeginInfo.renderArea = framebuffer.getRenderArea(); //this could probably be set here instead of from the framebuffer but do that later
+    renderPassBeginInfo.clearValueCount = 2;                      //TODO: temporary for one color and one depth attach;
+    VkClearValue clears[2];
+    renderPassBeginInfo.pClearValues = clears;
+
+    vkCmdBeginRenderPass(mCommandPool.getCommandBuffer(), &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void VulkanRenderer::endRenderPass()
+{
+    vkCmdEndRenderPass(mCommandPool.getCommandBuffer());
+}
+
+void VulkanRenderer::bindVertexBuffer(VulkanVertexBuffer& vertexBuffer)
+{
+    VkDeviceSize offsets = 0;
+    vkCmdBindVertexBuffers(mCommandPool.getCommandBuffer(),0,1,&vertexBuffer.getBuffer(),&offsets);
+}
+
+void VulkanRenderer::draw()
+{
+    vkCmdDraw(mCommandPool.getCommandBuffer(),3,1,0,0);
+}
+
+void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline& pipeline)
+{
+    vkCmdBindPipeline(mCommandPool.getCommandBuffer(),VK_PIPELINE_BIND_POINT_GRAPHICS,pipeline.getGraphicsPipeline());
 }

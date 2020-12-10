@@ -36,3 +36,12 @@ uint32_t WindowManager::getHeight()
 {
     return mHeight;
 }
+
+bool WindowManager::getWindowClosed()
+{
+	return !glfwWindowShouldClose(mWindow);
+}
+void WindowManager::pollEvents()
+{
+	glfwPollEvents();
+}

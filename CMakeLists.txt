@@ -8,7 +8,7 @@ project(spite VERSION 0.1)
 find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(glm REQUIRED)
-#TODO: more robust failure case
+#TODO: more robust failure case for finding appropriate packages
 
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(ThirdParty)

@@ -9,7 +9,13 @@ VulkanGraphicsPipeline::~VulkanGraphicsPipeline()
     cleanup();
 }
 
-void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass,const std::vector<VulkanShader>& shaders)
+VkPipeline VulkanGraphicsPipeline::getGraphicsPipeline()
+{
+    return mPipeline;
+}
+
+
+void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders)
 {
     mDevice = device;
 
@@ -26,8 +32,7 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass,const
     vertexInputAttributeInfo.format = VK_FORMAT_R32G32B32_SFLOAT;
     vertexInputAttributeInfo.offset = 0;
 
-
-    VkPipelineVertexInputStateCreateInfo vertexState = createVertexInputStateInfo(vertexInputBindingInfo,vertexInputAttributeInfo);
+    VkPipelineVertexInputStateCreateInfo vertexState = createVertexInputStateInfo(vertexInputBindingInfo, vertexInputAttributeInfo);
     VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = createInputAssemblyStateInfo();
 
     VkViewport viewport = {0, 0, 480, 320, 1, 1};
@@ -35,23 +40,22 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass,const
     VkOffset2D offset = {0, 0};
     VkRect2D scissor = {offset, extent};
     VkPipelineViewportStateCreateInfo viewportState = createViewportStateInfo(viewport, scissor);
-    VkPipelineRasterizationStateCreateInfo rasterizationState = createRasterizati1onStateInfo();
+    VkPipelineRasterizationStateCreateInfo rasterizationState = createRasterizationStateInfo();
     VkPipelineMultisampleStateCreateInfo multiSampleState = createMultiSampleStateInfo();
     VkPipelineDepthStencilStateCreateInfo depthStencilState = createDepthStencilStateInfo();
 
-
     //TODO: these blends will probably need to be controlled by my meta shader data. interesting its per attachment, might make it difficult. maybe need to make a rendergraph and have a dependency check
     std::vector<VkPipelineColorBlendAttachmentState> blendAttachments(1);
-    for(int i = 0; i< blendAttachments.size();i++)
+    for (int i = 0; i < blendAttachments.size(); i++)
     {
         blendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         blendAttachments[i].blendEnable = VK_FALSE;
-        blendAttachments[i].srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+        blendAttachments[i].srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
         blendAttachments[i].dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-        blendAttachments[i].colorBlendOp = VK_BLEND_OP_ADD; // Optional
-        blendAttachments[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+        blendAttachments[i].colorBlendOp = VK_BLEND_OP_ADD;             // Optional
+        blendAttachments[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
         blendAttachments[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-        blendAttachments[i].alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+        blendAttachments[i].alphaBlendOp = VK_BLEND_OP_ADD;             // Optional
     }
     VkPipelineColorBlendStateCreateInfo colorBlendState = createColorBlendStateInfo(blendAttachments);
 
@@ -59,7 +63,7 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass,const
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineInfo.pNext = nullptr;
     pipelineInfo.flags = 0;
-    pipelineInfo.stageCount = 1;          // hard coded for vertex stuff
+    pipelineInfo.stageCount = 1;                // hard coded for vertex stuff
     pipelineInfo.pStages = shaderStages.data(); // TODO: ACTUALLY MAKE SHADER UNITS
     pipelineInfo.pVertexInputState = &vertexState;
     pipelineInfo.pInputAssemblyState = &inputAssemblyState;
@@ -71,16 +75,15 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass,const
     pipelineInfo.pColorBlendState = &colorBlendState;
     pipelineInfo.pDynamicState = NULL;
 
-    //NEXT: REMOVE THIS SO WE CAN ACTUALLY LOAD UNIFORMS
+    //TODO: REMOVE THIS SO WE CAN ACTUALLY LOAD UNIFORMS
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0; // Optional
-    pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-    pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+    pipelineLayoutInfo.setLayoutCount = 0;            // Optional
+    pipelineLayoutInfo.pSetLayouts = nullptr;         // Optional
+    pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
     VkPipelineLayout lol;
-    vkCreatePipelineLayout(device,&pipelineLayoutInfo,nullptr,&lol);
-
+    vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &lol);
 
     pipelineInfo.layout = lol;
     pipelineInfo.renderPass = renderpass;
@@ -91,7 +94,7 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass,const
     vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &mPipeline);
 
     //TODO: REMOVE THIS NONSENSE
-    vkDestroyPipelineLayout(device,lol,nullptr);
+    vkDestroyPipelineLayout(device, lol, nullptr);
 }
 
 void VulkanGraphicsPipeline::cleanup()
@@ -99,10 +102,10 @@ void VulkanGraphicsPipeline::cleanup()
     vkDestroyPipeline(mDevice, mPipeline, nullptr);
 }
 
-std::vector<VkPipelineShaderStageCreateInfo> VulkanGraphicsPipeline::createShaderStageInfo(const std::vector<VulkanShader>& shaders)
+std::vector<VkPipelineShaderStageCreateInfo> VulkanGraphicsPipeline::createShaderStageInfo(const std::vector<VulkanShader> &shaders)
 {
     std::vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageInfo(shaders.size());
-    for(int i = 0; i<shaders.size(); i++)
+    for (int i = 0; i < shaders.size(); i++)
     {
         pipelineShaderStageInfo[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         pipelineShaderStageInfo[i].pNext = nullptr;
@@ -117,8 +120,8 @@ std::vector<VkPipelineShaderStageCreateInfo> VulkanGraphicsPipeline::createShade
     return pipelineShaderStageInfo;
 }
 
-    //TODO: move this to model creation and store in some kind of map? no need to recreate this on the model every time. also one of these is not model specific (instance data)
-VkPipelineVertexInputStateCreateInfo VulkanGraphicsPipeline::createVertexInputStateInfo(VkVertexInputBindingDescription& vertexInputBindingInfo, VkVertexInputAttributeDescription& vertexInputAttributeInfo)
+//TODO: move this to model creation and store in some kind of map? no need to recreate this on the model every time. also one of these is not model specific (instance data)
+VkPipelineVertexInputStateCreateInfo VulkanGraphicsPipeline::createVertexInputStateInfo(VkVertexInputBindingDescription &vertexInputBindingInfo, VkVertexInputAttributeDescription &vertexInputAttributeInfo)
 {
     VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
     vertexInputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -219,7 +222,7 @@ VkPipelineDepthStencilStateCreateInfo VulkanGraphicsPipeline::createDepthStencil
     return depthStencilStateInfo;
 }
 
-VkPipelineColorBlendStateCreateInfo VulkanGraphicsPipeline::createColorBlendStateInfo(const std::vector<VkPipelineColorBlendAttachmentState>& blendAttachments)
+VkPipelineColorBlendStateCreateInfo VulkanGraphicsPipeline::createColorBlendStateInfo(const std::vector<VkPipelineColorBlendAttachmentState> &blendAttachments)
 {
     VkPipelineColorBlendStateCreateInfo blendStateInfo = {};
     blendStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -228,7 +231,7 @@ VkPipelineColorBlendStateCreateInfo VulkanGraphicsPipeline::createColorBlendStat
     blendStateInfo.logicOpEnable = VK_FALSE;
     blendStateInfo.logicOp = VK_LOGIC_OP_AND;
     blendStateInfo.attachmentCount = 1;
-    blendStateInfo.pAttachments =blendAttachments.data();
+    blendStateInfo.pAttachments = blendAttachments.data();
 
     blendStateInfo.blendConstants[0] = 1.0f;
     blendStateInfo.blendConstants[1] = 1.0f;

@@ -8,13 +8,13 @@ VulkanFramebuffer::~VulkanFramebuffer()
     cleanup();
 }
 
-void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height,const VulkanRenderPass& renderPass,const std::vector<VkImageView> &imageViews)
+void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height, const VulkanRenderPass &renderPass, const std::vector<VkImageView> &imageViews)
 {
     mDevice = device;
     mAttachments = imageViews;
     VkFramebufferCreateInfo framebufferInfo = {};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    framebufferInfo.flags =  0;
+    framebufferInfo.flags = 0;
     framebufferInfo.pNext = nullptr;
     framebufferInfo.renderPass = renderPass.getRenderPass();
     framebufferInfo.attachmentCount = 2; // TODO: generic this, for now it just depth and color
@@ -23,13 +23,26 @@ void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height,co
     framebufferInfo.height = height;
     framebufferInfo.layers = 1; //Knowledge: how does this matter/where would I use this?
 
-    vkCreateFramebuffer(device,&framebufferInfo,nullptr,&mFramebuffer);
+    mRenderArea.extent = {width, height};
+    mRenderArea.offset = {0, 0};
+    vkCreateFramebuffer(device, &framebufferInfo, nullptr, &mFramebuffer);
 }
 
 void VulkanFramebuffer::cleanup()
 {
-    if(mFramebuffer != VK_NULL_HANDLE){
-        vkDestroyFramebuffer(mDevice,mFramebuffer,nullptr);
+    if (mFramebuffer != VK_NULL_HANDLE)
+    {
+        vkDestroyFramebuffer(mDevice, mFramebuffer, nullptr);
         mFramebuffer = VK_NULL_HANDLE;
     }
+}
+
+VkFramebuffer VulkanFramebuffer::getFramebuffer()
+{
+    return mFramebuffer;
+}
+
+VkRect2D VulkanFramebuffer::getRenderArea()
+{
+    return mRenderArea;
 }
