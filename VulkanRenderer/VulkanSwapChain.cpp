@@ -70,7 +70,7 @@ void VulkanSwapChain::cleanup(VkDevice device)
 {
     for (int i = 0; i < mSwapChainImages.size(); i++)
     {
-        vkDestroyImageView(device,mSwapChainImageViews[i],nullptr);
+        vkDestroyImageView(device, mSwapChainImageViews[i], nullptr);
     }
     vkDestroySwapchainKHR(device, mSwapChain, nullptr); //also clears the images
 }
@@ -85,7 +85,7 @@ void VulkanSwapChain::createImageViews(VkDevice device)
         imageViewInfo.image = mSwapChainImages[i];
         imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
         imageViewInfo.format = mSwapChainImageFormat;
-        imageViewInfo.components = {VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY , VK_COMPONENT_SWIZZLE_IDENTITY };
+        imageViewInfo.components = {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY};
         imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         imageViewInfo.subresourceRange.baseMipLevel = 0;
         imageViewInfo.subresourceRange.levelCount = 1;
@@ -95,6 +95,11 @@ void VulkanSwapChain::createImageViews(VkDevice device)
         VkResult result = vkCreateImageView(device, &imageViewInfo, nullptr, &mSwapChainImageViews[i]);
         assert(result == VK_SUCCESS);
     }
+}
+
+VkSwapchainKHR VulkanSwapChain::getSwapChain()
+{
+    return mSwapChain;
 }
 
 //TODO: figure out the rotating swap chain
@@ -157,4 +162,22 @@ VkExtent2D VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &cap
 
         return actualExtent;
     }
+}
+
+void VulkanSwapChain::acquireImageIndex(VkDevice device)
+{
+    VkAcquireNextImageInfoKHR acquireNextImageInfo = {};
+    acquireNextImageInfo.sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR;
+    acquireNextImageInfo.pNext = nullptr;
+    acquireNextImageInfo.swapchain = mSwapChain;
+    acquireNextImageInfo.timeout = 0;
+    acquireNextImageInfo.semaphore = VK_NULL_HANDLE;
+    acquireNextImageInfo.fence = VK_NULL_HANDLE;
+    acquireNextImageInfo.deviceMask = 0;
+    vkAcquireNextImage2KHR(device, &acquireNextImageInfo, &imageIndex);
+}
+
+uint32_t* VulkanSwapChain::getNextImageIndex()
+{
+    return &imageIndex;
 }

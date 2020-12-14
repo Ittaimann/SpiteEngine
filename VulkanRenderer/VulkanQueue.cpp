@@ -13,3 +13,8 @@ void VulkanQueue::init(VkDevice device,uint32_t family)
 
 void VulkanQueue::cleanup()
 {}
+
+VkQueue VulkanQueue::getQueue()
+{
+    return mQueue;
+}

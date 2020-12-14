@@ -80,7 +80,7 @@ void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText)
 
 //TODO: these imply only one command buffer, thats not how this is going to go.
 // we will probably want a command buffer abstract that has its own begins and ends.
-// request a command buffer struct that is stored inside of the commmandpool class that 
+// request a command buffer struct that is stored inside of the commmandpool class that
 // has all the needed extras (fences and semaphores?)
 void VulkanRenderer::beginFrame()
 {
@@ -93,7 +93,6 @@ void VulkanRenderer::beginFrame()
 }
 void VulkanRenderer::endFrame()
 {
-
     vkEndCommandBuffer(mCommandPool.getCommandBuffer());
 }
 
@@ -118,18 +117,60 @@ void VulkanRenderer::endRenderPass()
     vkCmdEndRenderPass(mCommandPool.getCommandBuffer());
 }
 
-void VulkanRenderer::bindVertexBuffer(VulkanVertexBuffer& vertexBuffer)
+void VulkanRenderer::bindVertexBuffer(VulkanVertexBuffer &vertexBuffer)
 {
     VkDeviceSize offsets = 0;
-    vkCmdBindVertexBuffers(mCommandPool.getCommandBuffer(),0,1,&vertexBuffer.getBuffer(),&offsets);
+    VkBuffer baseBuffer = vertexBuffer.getBuffer();
+    vkCmdBindVertexBuffers(mCommandPool.getCommandBuffer(), 0, 1, &baseBuffer, &offsets);
 }
 
 void VulkanRenderer::draw()
 {
-    vkCmdDraw(mCommandPool.getCommandBuffer(),3,1,0,0);
+    vkCmdDraw(mCommandPool.getCommandBuffer(), 3, 1, 0, 0);
 }
 
-void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline& pipeline)
+void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline)
 {
-    vkCmdBindPipeline(mCommandPool.getCommandBuffer(),VK_PIPELINE_BIND_POINT_GRAPHICS,pipeline.getGraphicsPipeline());
+    vkCmdBindPipeline(mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
+}
+
+
+void VulkanRenderer::startNewFrame()
+{
+    mSwapChain.acquireImageIndex(mDevice.getDevice());
+}
+
+void VulkanRenderer::submitFrame()
+{
+    VkCommandBuffer submisionBuffer = mCommandPool.getCommandBuffer();
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.pNext = nullptr;
+    submitInfo.waitSemaphoreCount = 0;
+    submitInfo.pWaitSemaphores = nullptr;
+    submitInfo.pWaitDstStageMask = nullptr;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &submisionBuffer;
+    submitInfo.signalSemaphoreCount = 0;
+    submitInfo.pSignalSemaphores = nullptr;
+    VkResult result = vkQueueSubmit(mGraphicsQueue.getQueue(),1,&submitInfo,VK_NULL_HANDLE);
+    assert(result == VK_SUCCESS);
+}
+
+void VulkanRenderer::presentFrame()
+{
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 0;
+    presentInfo.pWaitSemaphores = nullptr;
+    VkSwapchainKHR swapChains[] = {mSwapChain.getSwapChain()};
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+    uint32_t imageIndex = 0;
+    presentInfo.pImageIndices = mSwapChain.getNextImageIndex();
+    presentInfo.pResults = nullptr; // Optional
+    vkQueuePresentKHR(mPresentQueue.getQueue(), &presentInfo);
+    vkDeviceWaitIdle(mDevice.getDevice());
+
+
 }

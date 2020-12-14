@@ -39,12 +39,17 @@ public:
     void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
     void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
 
+
+    // TODO: rename these/repuprose these, change them to begin recording or something
     void beginFrame();
     void endFrame();
     void beginRenderPass(VulkanRenderPass &renderpass, VulkanFramebuffer &framebuffer);
     void endRenderPass();
 
     void draw();
+    void startNewFrame();
+    void submitFrame();
+    void presentFrame();
 
     //TODO: const this down te whole at some point. this
     void bindVertexBuffer(VulkanVertexBuffer& vertexBuffer);

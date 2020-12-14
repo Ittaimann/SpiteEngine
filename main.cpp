@@ -4,7 +4,8 @@
 #include "VulkanRenderer/VulkanRenderer.h"
 
 //NEXT: Get the command buffer submission and sync handled.
-// TODO: get a code review...
+//TODO: error handling inside the renderer needs to happen. Right now we are just flying and that is a mega mistake. shit could be dying badly.
+//TODO: get a code review...
 int main()
 {
     //TODO: config file
@@ -38,21 +39,24 @@ int main()
         renderer.buildShader(shaders[1], &frag);
         renderer.buildPipeline(pipeline, renderpass, shaders);
         VulkanVertexBuffer vertexBuffer;
-        renderer.buildModel(vertexBuffer,&loaded);
+        renderer.buildModel(vertexBuffer, &loaded);
         //TODO: render loop and exit from glfw input
         while (window.getWindowClosed())
         {
             window.pollEvents();
+            renderer.startNewFrame();
             renderer.beginFrame();
             renderer.beginRenderPass(renderpass,framebuffer);
 
             renderer.bindVertexBuffer(vertexBuffer);
-            renderer.bindPipeline(pipeline)
+            renderer.bindPipeline(pipeline);
             renderer.draw();
 
             renderer.endRenderPass();
             renderer.endFrame();
-        }
+            renderer.submitFrame();
+            renderer.presentFrame();
+         }
     }
     renderer.cleanup();
 

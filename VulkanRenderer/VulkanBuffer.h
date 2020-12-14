@@ -9,13 +9,13 @@ class VulkanBuffer
 public:
     VulkanBuffer();
     ~VulkanBuffer();
-    void init(VmaAllocator allocator, void *data, uint32_t size, VkBufferUsageFlags usage, VmaMemoryUsage VmaUsage);
-    void cleanup(VmaAllocator allocator);
-    VkBuffer& getBuffer();
+    void init(VmaAllocator* allocator, void *data, uint32_t size, VkBufferUsageFlags usage, VmaMemoryUsage VmaUsage);
+    void cleanup();
+    VkBuffer getBuffer();
 private:
-    VkBuffer mBuffer;
     VmaAllocation mVmaAlloc;
     VmaAllocator* mAllocator;
+    VkBuffer mBuffer;
     uint32_t mSize;
 };
 

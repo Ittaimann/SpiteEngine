@@ -7,12 +7,12 @@ VulkanBuffer::VulkanBuffer()
 
 VulkanBuffer::~VulkanBuffer()
 {
-    cleanup(*mAllocator);
+    cleanup();
 }
 
-void VulkanBuffer::init(VmaAllocator allocator, void *data, uint32_t size, VkBufferUsageFlags usage, VmaMemoryUsage VmaUsage)
+void VulkanBuffer::init(VmaAllocator *allocator, void *data, uint32_t size, VkBufferUsageFlags usage, VmaMemoryUsage VmaUsage)
 {
-    mAllocator = &allocator;
+    mAllocator = allocator;
 
     VkBufferCreateInfo bufferInfo = {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -22,19 +22,23 @@ void VulkanBuffer::init(VmaAllocator allocator, void *data, uint32_t size, VkBuf
     VmaAllocationCreateInfo allocInfo = {};
     allocInfo.usage = VmaUsage;
     allocInfo.pUserData = data;
-    VkResult result = vmaCreateBuffer(allocator, &bufferInfo, &allocInfo, &mBuffer, &mVmaAlloc, nullptr);
+    VkResult result = vmaCreateBuffer(*allocator, &bufferInfo, &allocInfo, &mBuffer, &mVmaAlloc, nullptr);
     assert(result == VK_SUCCESS);
 
     mSize = size;
     //TODO: figure out how you want to handle the input to the buffer and the mapping.
 }
 
-void VulkanBuffer::cleanup(VmaAllocator allocator)
+void VulkanBuffer::cleanup()
 {
-    vmaDestroyBuffer(allocator, mBuffer, mVmaAlloc);
+    if (mBuffer != VK_NULL_HANDLE)
+    {
+        vmaDestroyBuffer(*mAllocator, mBuffer, mVmaAlloc);
+        mBuffer = VK_NULL_HANDLE;
+    }
 }
 
-VkBuffer& VulkanBuffer::getBuffer()
+VkBuffer VulkanBuffer::getBuffer()
 {
     return mBuffer;
 }

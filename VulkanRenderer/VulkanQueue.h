@@ -10,6 +10,7 @@ public:
     ~VulkanQueue();
     void init(VkDevice device,uint32_t family);
     void cleanup();
+    VkQueue getQueue();
 private:
     VkQueue mQueue;
 };
