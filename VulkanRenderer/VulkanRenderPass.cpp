@@ -9,6 +9,7 @@ VulkanRenderPass::~VulkanRenderPass()
     cleanup();
 }
 
+//TODO: build a proper init for description creation. for now this only works for front buffer
 void VulkanRenderPass::init(VkDevice device)
 {
     mDevice = device;
@@ -17,7 +18,7 @@ void VulkanRenderPass::init(VkDevice device)
 
     //For now its just two as we only have the main render pass
     // color attachment => present
-    VkAttachmentDescription attachmentDesc[2] = {};
+    VkAttachmentDescription attachmentDesc[1] = {};
     attachmentDesc[0].flags = 0;
     attachmentDesc[0].format = VK_FORMAT_B8G8R8A8_UNORM;
     attachmentDesc[0].samples = VK_SAMPLE_COUNT_1_BIT; //msaa?
@@ -28,17 +29,17 @@ void VulkanRenderPass::init(VkDevice device)
     attachmentDesc[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     attachmentDesc[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     VkAttachmentReference color = {0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
-    //depth attachement
-    attachmentDesc[1].flags = 0;
-    attachmentDesc[1].format = VK_FORMAT_D24_UNORM_S8_UINT;
-    attachmentDesc[1].samples = VK_SAMPLE_COUNT_1_BIT; //msaa?
-    attachmentDesc[1].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    attachmentDesc[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; // present this for now
-    attachmentDesc[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    attachmentDesc[1].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    attachmentDesc[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    attachmentDesc[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    VkAttachmentReference depth = {1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
+    // //depth attachement
+    // attachmentDesc[1].flags = 0;
+    // attachmentDesc[1].format = VK_FORMAT_D24_UNORM_S8_UINT;
+    // attachmentDesc[1].samples = VK_SAMPLE_COUNT_1_BIT; //msaa?
+    // attachmentDesc[1].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    // attachmentDesc[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; // present this for now
+    // attachmentDesc[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    // attachmentDesc[1].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    // attachmentDesc[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    // attachmentDesc[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    // VkAttachmentReference depth = {1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
 
     //Knowledge: learn what each of these attachents are (specifically preserve?)
     VkSubpassDescription subPassDesc = {};
@@ -49,7 +50,7 @@ void VulkanRenderPass::init(VkDevice device)
     subPassDesc.colorAttachmentCount = 1;
     subPassDesc.pColorAttachments = &color;
     subPassDesc.pResolveAttachments = 0;
-    subPassDesc.pDepthStencilAttachment = &depth;
+    subPassDesc.pDepthStencilAttachment = nullptr;//&depth;
     subPassDesc.preserveAttachmentCount = 0;
     subPassDesc.pPreserveAttachments = nullptr;
 
@@ -58,7 +59,7 @@ void VulkanRenderPass::init(VkDevice device)
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.flags = 0;
     renderPassInfo.pNext = nullptr;
-    renderPassInfo.attachmentCount = 2; //color and depth
+    renderPassInfo.attachmentCount = 1; //color
     renderPassInfo.pAttachments = attachmentDesc;
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subPassDesc;

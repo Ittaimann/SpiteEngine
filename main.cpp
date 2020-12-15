@@ -27,26 +27,26 @@ int main()
     // and pass those into the renderer as like a "build the driver version", then return a pointer to the default?
     // Maybe have it so that its a struct of data we pass into the apis and  then have a driver pointer attach
     {
-        VulkanRenderPass renderpass;
-        renderer.buildRenderPass(renderpass);
-        VulkanImage depthBuffer;
-        renderer.buildImage(depthBuffer, 480, 320, VK_FORMAT_D24_UNORM_S8_UINT, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
-        VulkanFramebuffer framebuffer;
-        renderer.buildFramebuffer(framebuffer, 480, 320, renderpass, depthBuffer);
+        
         VulkanGraphicsPipeline pipeline;
         std::vector<VulkanShader> shaders(2);
         renderer.buildShader(shaders[0], &vert);
         renderer.buildShader(shaders[1], &frag);
-        renderer.buildPipeline(pipeline, renderpass, shaders);
+        renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders);
         VulkanVertexBuffer vertexBuffer;
         renderer.buildModel(vertexBuffer, &loaded);
         //TODO: render loop and exit from glfw input
         while (window.getWindowClosed())
         {
+            // input
             window.pollEvents();
+
+            // rendering
             renderer.startNewFrame();
             renderer.beginFrame();
-            renderer.beginRenderPass(renderpass,framebuffer);
+
+
+            renderer.beginRenderPass(*renderer.getFrontRenderPass(),*renderer.getFrontBuffer());
 
             renderer.bindVertexBuffer(vertexBuffer);
             renderer.bindPipeline(pipeline);

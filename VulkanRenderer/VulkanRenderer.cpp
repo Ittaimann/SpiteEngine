@@ -34,10 +34,32 @@ void VulkanRenderer::init(bool validation, WindowManager *window)
     allocatorInfo.instance = mInstance.getInstance();
 
     vmaCreateAllocator(&allocatorInfo, &mAllocator);
+
+    VkSemaphoreCreateInfo semaphoreInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, nullptr, 0};
+    vkCreateSemaphore(mDevice.getDevice(), &semaphoreInfo, nullptr, &mQueueSubmitSemaphore);
+
+    mCurrentFrame = 0;
+    initFrontBuffer();
+}
+
+void VulkanRenderer::initFrontBuffer()
+{
+    std::vector<VkImageView> swapChainImageViews = mSwapChain.getImageViews();
+    mFrontFrameBuffers.resize(swapChainImageViews.size());
+    VkExtent2D swapChainExtent = mSwapChain.getSwapChainExtent();
+    mFrontRenderPass.init(mDevice.getDevice());
+    for (int i = 0; i < swapChainImageViews.size(); i++)
+    {
+        mFrontFrameBuffers.at(i).init(mDevice.getDevice(), swapChainExtent.width, swapChainExtent.height, mFrontRenderPass, swapChainImageViews[i]);
+    }
 }
 
 void VulkanRenderer::cleanup()
 {
+    mFrontFrameBuffers.clear();
+    mFrontRenderPass.cleanup();
+    vkDestroySemaphore(mDevice.getDevice(),mQueueSubmitSemaphore,nullptr);
+
     mCommandPool.cleanup(mDevice.getDevice());
     mSwapChain.cleanup(mDevice.getDevice());
     vmaDestroyAllocator(mAllocator);
@@ -64,8 +86,17 @@ void VulkanRenderer::buildRenderPass(VulkanRenderPass &renderpass)
 
 void VulkanRenderer::buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/)
 {
-    std::vector<VkImageView> imageViews = {mSwapChain.getImageView(0), bufferAttach.getImageView()};
+    std::vector<VkImageView> imageViews = {mSwapChain.getImageViews().at(0), bufferAttach.getImageView()};
     framebuffer.init(mDevice.getDevice(), width, height, renderpass, imageViews);
+}
+
+VulkanFramebuffer* VulkanRenderer::getFrontBuffer()
+{
+    return &mFrontFrameBuffers.at(mCurrentFrame);
+}
+VulkanRenderPass* VulkanRenderer::getFrontRenderPass()
+{
+    return &mFrontRenderPass;
 }
 
 void VulkanRenderer::buildPipeline(VulkanGraphicsPipeline &pipeline, const VulkanRenderPass &renderpass, const std::vector<VulkanShader> &shaders)
@@ -134,7 +165,6 @@ void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline)
     vkCmdBindPipeline(mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
 }
 
-
 void VulkanRenderer::startNewFrame()
 {
     mSwapChain.acquireImageIndex(mDevice.getDevice());
@@ -143,34 +173,42 @@ void VulkanRenderer::startNewFrame()
 void VulkanRenderer::submitFrame()
 {
     VkCommandBuffer submisionBuffer = mCommandPool.getCommandBuffer();
+    //Knowledge: look into this a tad bit more. This seems like it could be omega important.
+    VkSemaphore waitSemaphore[] = {mSwapChain.getSwapChainSemaphore()};
+    VkSemaphore signalSemaphore[] = {mQueueSubmitSemaphore};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.pNext = nullptr;
-    submitInfo.waitSemaphoreCount = 0;
-    submitInfo.pWaitSemaphores = nullptr;
-    submitInfo.pWaitDstStageMask = nullptr;
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphore;
+    submitInfo.pWaitDstStageMask = waitStages;
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &submisionBuffer;
-    submitInfo.signalSemaphoreCount = 0;
-    submitInfo.pSignalSemaphores = nullptr;
-    VkResult result = vkQueueSubmit(mGraphicsQueue.getQueue(),1,&submitInfo,VK_NULL_HANDLE);
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphore;
+    VkResult result = vkQueueSubmit(mGraphicsQueue.getQueue(), 1, &submitInfo, VK_NULL_HANDLE);
     assert(result == VK_SUCCESS);
 }
 
 void VulkanRenderer::presentFrame()
 {
+    //TODO: make sure this is set up properly
+    VkSemaphore signalSemaphore[] = {mQueueSubmitSemaphore};
+
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.waitSemaphoreCount = 0;
-    presentInfo.pWaitSemaphores = nullptr;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphore;
     VkSwapchainKHR swapChains[] = {mSwapChain.getSwapChain()};
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
-    uint32_t imageIndex = 0;
     presentInfo.pImageIndices = mSwapChain.getNextImageIndex();
     presentInfo.pResults = nullptr; // Optional
     vkQueuePresentKHR(mPresentQueue.getQueue(), &presentInfo);
+    //TODO: do proper sync other wise this is going to be the noose
     vkDeviceWaitIdle(mDevice.getDevice());
-
+    mCurrentFrame = (mCurrentFrame + 1) % 3; // TODO: figure out the proper max frames in flight
 
 }

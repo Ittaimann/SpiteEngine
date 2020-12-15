@@ -19,7 +19,6 @@ VkPipeline VulkanGraphicsPipeline::getGraphicsPipeline()
     return mPipeline;
 }
 
-
 void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders)
 {
     mDevice = device;
@@ -28,8 +27,8 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
 
     VkVertexInputBindingDescription vertexInputBindingInfo = {}; // vertex buffer info
     vertexInputBindingInfo.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    vertexInputBindingInfo.binding = 0; //ooofers
-    vertexInputBindingInfo.stride = sizeof(glm::vec3);  //TODO: this is wrong;
+    vertexInputBindingInfo.binding = 0;                //ooofers
+    vertexInputBindingInfo.stride = sizeof(glm::vec3); //TODO: this is wrong;
 
     VkVertexInputAttributeDescription vertexInputAttributeInfo = {}; // vertice info
     vertexInputAttributeInfo.location = 0;
@@ -68,8 +67,8 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineInfo.pNext = nullptr;
     pipelineInfo.flags = 0;
-    pipelineInfo.stageCount = 2;                // hard coded for vertex stuff
-    pipelineInfo.pStages = shaderStages.data(); // TODO: ACTUALLY MAKE SHADER UNITS
+    pipelineInfo.stageCount = shaderStages.size();
+    pipelineInfo.pStages = shaderStages.data();
     pipelineInfo.pVertexInputState = &vertexState;
     pipelineInfo.pInputAssemblyState = &inputAssemblyState;
     pipelineInfo.pTessellationState = nullptr;

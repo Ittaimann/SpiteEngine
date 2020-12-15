@@ -27,11 +27,11 @@ void VulkanBuffer::init(VmaAllocator *allocator, void *data, uint32_t size, VkBu
 
     mSize = size;
 
+    //TODO: figure out how you want to handle staging buffers with vma.
     void* mapdata;
     vmaMapMemory(*allocator, mVmaAlloc, &mapdata);
     memcpy(mapdata, data, (size_t)size);
     vmaUnmapMemory(*allocator, mVmaAlloc);
-    //TODO: figure out how you want to handle the input to the buffer and the mapping.
 }
 
 void VulkanBuffer::cleanup()

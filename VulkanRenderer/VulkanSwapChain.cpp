@@ -64,6 +64,12 @@ void VulkanSwapChain::init(VkDevice device, VkSurfaceKHR surface, const VulkanHe
     mSwapChainImageFormat = surfaceFormat.format;
     mSwapChainExtent = extent;
     createImageViews(device);
+
+    VkSemaphoreCreateInfo semaphoreInfo = {};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    semaphoreInfo.pNext = nullptr;
+    semaphoreInfo.flags = 0;
+    vkCreateSemaphore(device, &semaphoreInfo, nullptr, &mSwapChainSemaphore);
 }
 
 void VulkanSwapChain::cleanup(VkDevice device)
@@ -72,6 +78,8 @@ void VulkanSwapChain::cleanup(VkDevice device)
     {
         vkDestroyImageView(device, mSwapChainImageViews[i], nullptr);
     }
+    vkDestroySemaphore(device, mSwapChainSemaphore, nullptr);
+
     vkDestroySwapchainKHR(device, mSwapChain, nullptr); //also clears the images
 }
 
@@ -103,9 +111,9 @@ VkSwapchainKHR VulkanSwapChain::getSwapChain()
 }
 
 //TODO: figure out the rotating swap chain
-VkImageView VulkanSwapChain::getImageView(uint32_t swapChainIndex)
+std::vector<VkImageView> VulkanSwapChain::getImageViews()
 {
-    return mSwapChainImageViews[swapChainIndex];
+    return mSwapChainImageViews;
 }
 
 std::vector<VkImage> VulkanSwapChain::getSwapChainImages()
@@ -166,18 +174,15 @@ VkExtent2D VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &cap
 
 void VulkanSwapChain::acquireImageIndex(VkDevice device)
 {
-    VkAcquireNextImageInfoKHR acquireNextImageInfo = {};
-    acquireNextImageInfo.sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR;
-    acquireNextImageInfo.pNext = nullptr;
-    acquireNextImageInfo.swapchain = mSwapChain;
-    acquireNextImageInfo.timeout = 0;
-    acquireNextImageInfo.semaphore = VK_NULL_HANDLE;
-    acquireNextImageInfo.fence = VK_NULL_HANDLE;
-    acquireNextImageInfo.deviceMask = 0;
-    vkAcquireNextImage2KHR(device, &acquireNextImageInfo, &imageIndex);
+    vkAcquireNextImageKHR(device, mSwapChain, UINT64_MAX, mSwapChainSemaphore, VK_NULL_HANDLE, &mImageIndex);
 }
 
-uint32_t* VulkanSwapChain::getNextImageIndex()
+uint32_t *VulkanSwapChain::getNextImageIndex()
 {
-    return &imageIndex;
+    return &mImageIndex;
+}
+
+VkSemaphore VulkanSwapChain::getSwapChainSemaphore()
+{
+    return mSwapChainSemaphore;
 }

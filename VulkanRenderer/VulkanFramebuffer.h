@@ -14,6 +14,8 @@ public:
     VulkanFramebuffer();
     ~VulkanFramebuffer();
     void init(VkDevice device, uint32_t width, uint32_t height, const VulkanRenderPass &renderPass, const std::vector<VkImageView> &imageViews);
+    void init(VkDevice device, uint32_t width, uint32_t height, const VulkanRenderPass &renderPass, VkImageView imageViews);
+
     void cleanup();
 
     VkFramebuffer getFramebuffer();

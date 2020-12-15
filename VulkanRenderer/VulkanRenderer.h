@@ -55,7 +55,12 @@ public:
     void bindVertexBuffer(VulkanVertexBuffer& vertexBuffer);
     void bindPipeline(VulkanGraphicsPipeline& pipeline);
 
+    VulkanFramebuffer* getFrontBuffer(); //return based on current frame
+    VulkanRenderPass* getFrontRenderPass();
+
 private:
+    void initFrontBuffer();
+
     VulkanInstance mInstance;
     VulkanDevice mDevice;
     VulkanQueue mPresentQueue;
@@ -65,6 +70,12 @@ private:
     VulkanCommandPool mCommandPool;
     VulkanSwapChain mSwapChain;
     VmaAllocator mAllocator; // optimize: maybe switch this to be a pointer and foward declare.
+
+    VkSemaphore mQueueSubmitSemaphore;
+    std::vector<VulkanFramebuffer> mFrontFrameBuffers; //TODO: replace this with a proper max frames in flight (find where that might be)
+    VulkanRenderPass mFrontRenderPass;
+
+    uint32_t mCurrentFrame;
 };
 
 #endif // vulkan driver

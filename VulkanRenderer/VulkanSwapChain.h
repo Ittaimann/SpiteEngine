@@ -20,17 +20,21 @@ public:
     void acquireImageIndex(VkDevice device);
     VkSwapchainKHR getSwapChain();
     std::vector<VkImage> getSwapChainImages();
-    VkImageView getImageView(uint32_t swapChainIndex);
+    std::vector<VkImageView> getImageViews();
     VkFormat getSwapChainFormat();
     VkExtent2D getSwapChainExtent();
     uint32_t* getNextImageIndex();
+    VkSemaphore getSwapChainSemaphore();
+
 private:
     VkSwapchainKHR mSwapChain;
     std::vector<VkImage> mSwapChainImages;
     std::vector<VkImageView> mSwapChainImageViews;
+    VkSemaphore mSwapChainSemaphore;
     VkFormat mSwapChainImageFormat;
     VkExtent2D mSwapChainExtent;
-    uint32_t imageIndex;
+    uint32_t mImageIndex;
+
 };
 
 #endif
