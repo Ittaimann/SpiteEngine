@@ -72,11 +72,11 @@ void VulkanRenderer::cleanup()
 void VulkanRenderer::buildModel(VulkanVertexBuffer &vertexBuffer, ModelLoad *model, bool deviceLocal)
 {
     vertexBuffer.init(model, &mAllocator);
-    if(deviceLocal)
-    {
-        dataTransfer transfer = {nullptr, vertexBuffer.getBufferPtr()};
-        mCopyCommandQueue.push_back(transfer);
-    }
+    // if(deviceLocal)
+    // {
+    //     dataTransfer transfer = {nullptr, vertexBuffer.getBufferPtr()};
+    //     mCopyCommandQueue.push_back(transfer);
+    // }
     //TODO: models have to do a lot of extra stuff like switch to device local memory + cache vertex binding and attribute binding.
 }
 
@@ -170,13 +170,13 @@ void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline)
 void VulkanRenderer::beginFrame()
 {
     mSwapChain.acquireImageIndex(mDevice.getDevice());
-    mCommandPool.beginRecording();
-    VkCommandBuffer copyBuffer = mCommandPool.getCommandBuffer();
-    for(int i = 0; i<mCopyCommandQueue.size(); i++)
-    {
-        mCopyCommandQueue.at(i).buffer->unstageBuffer(copyBuffer);
-    }
-    mCommandPool.endRecording();
+    // mCommandPool.beginRecording();
+    // VkCommandBuffer copyBuffer = mCommandPool.getCommandBuffer();
+    // for(int i = 0; i<mCopyCommandQueue.size(); i++)
+    // {
+    //     mCopyCommandQueue.at(i).buffer->unstageBuffer(copyBuffer);
+    // }
+    // mCommandPool.endRecording();
     mCopyCommandQueue.clear(); // do transfers for all buffers and submit
 }
 
