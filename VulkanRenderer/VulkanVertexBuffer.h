@@ -15,6 +15,7 @@ public:
     void cleanup();
     VkBuffer getVkBuffer();
     VulkanBuffer getBuffer();
+    VulkanBuffer* getBufferPtr();
 private:
     VulkanBuffer mBuffer;
 };

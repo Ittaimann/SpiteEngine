@@ -63,5 +63,5 @@ int main()
     renderer.cleanup();
 
     window.cleanup();
-    return 1;
+    return 0;
 }

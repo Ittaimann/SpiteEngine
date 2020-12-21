@@ -20,3 +20,9 @@ VulkanBuffer VulkanVertexBuffer::getBuffer()
 {
     return mBuffer;
 }
+
+//TODO: reconsider this design decision. seems like i'm fighiting c++ but am I winning?
+VulkanBuffer *VulkanVertexBuffer::getBufferPtr()
+{
+    return &mBuffer;
+}

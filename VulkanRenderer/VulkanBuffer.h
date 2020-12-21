@@ -12,10 +12,14 @@ public:
     void init(VmaAllocator* allocator, void *data, uint32_t size, VkBufferUsageFlags usage, VmaMemoryUsage VmaUsage);
     void cleanup();
     VkBuffer getBuffer();
+    void unstageBuffer(VkCommandBuffer commandBuffer); //TODO: does this name make sense?
+
 private:
     VmaAllocation mVmaAlloc;
     VmaAllocator* mAllocator;
+    VkBuffer mStagingBuffer;
     VkBuffer mBuffer;
+
     uint32_t mSize;
 };
 

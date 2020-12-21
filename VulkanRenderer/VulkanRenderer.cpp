@@ -71,12 +71,11 @@ void VulkanRenderer::cleanup()
 
 void VulkanRenderer::buildModel(VulkanVertexBuffer &vertexBuffer, ModelLoad *model, bool deviceLocal)
 {
-
     vertexBuffer.init(model, &mAllocator);
     if(deviceLocal)
     {
-        //dataTransfer transfer = {nullptr, &vertexBuffer.getBuffer()};
-        //mCopyCommandQueue.push_back(transfer);
+        dataTransfer transfer = {nullptr, vertexBuffer.getBufferPtr()};
+        mCopyCommandQueue.push_back(transfer);
     }
     //TODO: models have to do a lot of extra stuff like switch to device local memory + cache vertex binding and attribute binding.
 }
@@ -123,16 +122,11 @@ void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText)
 // has all the needed extras (fences and semaphores?)
 void VulkanRenderer::beginRecording()
 {
-    VkCommandBufferBeginInfo commandBufferBeginInfo = {};
-    commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    commandBufferBeginInfo.pNext = nullptr;
-    commandBufferBeginInfo.pInheritanceInfo = nullptr;
-    commandBufferBeginInfo.flags = 0;
-    vkBeginCommandBuffer(mCommandPool.getCommandBuffer(), &commandBufferBeginInfo);
+    mCommandPool.beginRecording(); // maybe return a handle to the command buffer?
 }
 void VulkanRenderer::endRecording()
 {
-    vkEndCommandBuffer(mCommandPool.getCommandBuffer());
+    mCommandPool.endRecording();
 }
 
 //TODO: tight renderpass and framebuffer together
@@ -176,8 +170,13 @@ void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline)
 void VulkanRenderer::beginFrame()
 {
     mSwapChain.acquireImageIndex(mDevice.getDevice());
-    
-    //TODO: update from staging here: 
+    mCommandPool.beginRecording();
+    VkCommandBuffer copyBuffer = mCommandPool.getCommandBuffer();
+    for(int i = 0; i<mCopyCommandQueue.size(); i++)
+    {
+        mCopyCommandQueue.at(i).buffer->unstageBuffer(copyBuffer);
+    }
+    mCommandPool.endRecording();
     mCopyCommandQueue.clear(); // do transfers for all buffers and submit
 }
 
@@ -185,11 +184,12 @@ void VulkanRenderer::endFrame()
 {
     submitFrame();
     presentFrame();
+    mCommandPool.endFrame();
 }
 
 void VulkanRenderer::submitFrame()
 {
-    VkCommandBuffer submisionBuffer = mCommandPool.getCommandBuffer();
+    std::vector<VkCommandBuffer> submissionBuffers = mCommandPool.getUsedCommandBuffers();
     //Knowledge: look into this a tad bit more. This seems like it could be omega important.
     VkSemaphore waitSemaphore[] = {mSwapChain.getSwapChainSemaphore()};
     VkSemaphore signalSemaphore[] = {mQueueSubmitSemaphore};
@@ -201,8 +201,8 @@ void VulkanRenderer::submitFrame()
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphore;
     submitInfo.pWaitDstStageMask = waitStages;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &submisionBuffer;
+    submitInfo.commandBufferCount = submissionBuffers.size();
+    submitInfo.pCommandBuffers = submissionBuffers.data();
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphore;
     VkResult result = vkQueueSubmit(mGraphicsQueue.getQueue(), 1, &submitInfo, VK_NULL_HANDLE);

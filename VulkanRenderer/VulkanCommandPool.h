@@ -2,6 +2,7 @@
 #define VULKAN_COMMAND_POOL_H
 
 #include <vulkan/vulkan.h>
+#include <vector>
 
 class VulkanCommandPool
 {
@@ -10,15 +11,22 @@ public:
     ~VulkanCommandPool();
     void init(VkDevice device, uint32_t graphicsFamily);
     void cleanup(VkDevice device);
+    void endFrame();
+
+    VkCommandBuffer allocateCommandBuffer();
+    void beginRecording();
+    void endRecording();
 
     VkCommandBuffer getCommandBuffer();
-    VkCommandBuffer getTransientCommandBuffer(VkDevice device);
+    std::vector<VkCommandBuffer> getUsedCommandBuffers();
+
 private:
     VkCommandPool mCommandPool;
-    VkCommandBuffer mCommandBuffer; // TODO: do a proper pool of these.
-    VkCommandBuffer mTransientCommandBuffer; // TODO: do a proper pool of these.
-
-    // todo: create a VkFence and maybe a semaphore per commandBuffer? 
+    VkDevice mDevice;
+    std::vector<VkCommandBuffer> mFreeCommandBufferQueue;
+    std::vector<VkCommandBuffer> mUsedCommandBufferQueue;
+    VkCommandBuffer mCommandBuffer;          // TODO: do a proper pool of these.
+    // todo: create a VkFence and maybe a semaphore per commandBuffer?
 };
 
 #endif
