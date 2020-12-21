@@ -11,7 +11,12 @@ void VulkanVertexBuffer::init(const ModelLoad *model, VmaAllocator *alloc)
 }
 void VulkanVertexBuffer::cleanup() {}
 
-VkBuffer VulkanVertexBuffer::getBuffer()
+VkBuffer VulkanVertexBuffer::getVkBuffer()
 {
     return mBuffer.getBuffer();
+}
+
+VulkanBuffer VulkanVertexBuffer::getBuffer()
+{
+    return mBuffer;
 }

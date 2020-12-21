@@ -28,26 +28,6 @@ void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height, c
     vkCreateFramebuffer(device, &framebufferInfo, nullptr, &mFramebuffer);
 }
 
-void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height, const VulkanRenderPass &renderPass, VkImageView imageViews)
-{
-    mDevice = device;
-    mAttachments.push_back(imageViews);
-    VkFramebufferCreateInfo framebufferInfo = {};
-    framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    framebufferInfo.flags = 0;
-    framebufferInfo.pNext = nullptr;
-    framebufferInfo.renderPass = renderPass.getRenderPass();
-    framebufferInfo.attachmentCount = 1; // TODO: generic this, for now it just depth and color
-    framebufferInfo.pAttachments = &imageViews;
-    framebufferInfo.width = width;
-    framebufferInfo.height = height;
-    framebufferInfo.layers = 1; //Knowledge: how does this matter/where would I use this?
-
-    mRenderArea.extent = {width, height};
-    mRenderArea.offset = {0, 0};
-    vkCreateFramebuffer(device, &framebufferInfo, nullptr, &mFramebuffer);
-}
-
 void VulkanFramebuffer::cleanup()
 {
     if (mFramebuffer != VK_NULL_HANDLE)

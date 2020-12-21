@@ -32,7 +32,7 @@ public:
     void init(bool validation, WindowManager *window);
     void cleanup();
 
-    void buildModel(VulkanVertexBuffer& vertexBuffer, ModelLoad *model);
+    void buildModel(VulkanVertexBuffer& vertexBuffer, ModelLoad *model, bool deviceLocal);
     void buildImage(VulkanImage &image, uint32_t width, uint32_t height, VkFormat format, VkImageUsageFlagBits usage, VkImageAspectFlags imageViewAspect);
     void buildRenderPass(VulkanRenderPass &renderpass);
     void buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
@@ -43,6 +43,9 @@ public:
     // TODO: rename these/repuprose these, change them to begin recording or something
     void beginFrame();
     void endFrame();
+    void beginRecording();
+    void endRecording();
+
     void beginRenderPass(VulkanRenderPass &renderpass, VulkanFramebuffer &framebuffer);
     void endRenderPass();
 
@@ -74,8 +77,15 @@ private:
     VkSemaphore mQueueSubmitSemaphore;
     std::vector<VulkanFramebuffer> mFrontFrameBuffers; //TODO: replace this with a proper max frames in flight (find where that might be)
     VulkanRenderPass mFrontRenderPass;
-
     uint32_t mCurrentFrame;
+
+    //TODO: re-architect this? seems weird
+    //pointers to the buffer or image that require memory transfer operations 
+    struct dataTransfer{
+        VulkanImage* Image = nullptr;
+        VulkanBuffer* buffer = nullptr;
+    };
+    std::vector<dataTransfer> mCopyCommandQueue; //TODO: figure out async commands for transfer.
 };
 
 #endif // vulkan driver

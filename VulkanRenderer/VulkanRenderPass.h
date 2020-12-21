@@ -2,7 +2,7 @@
 #define VULKAN_RENDER_PASS_H
 
 #include <vulkan/vulkan.h>
-//TODO: figure out if this is going to be a pool or an individual. for now it can be singular
+//going to be pooled in main
 class VulkanRenderPass
 {
 public:
@@ -13,8 +13,11 @@ public:
     void cleanup();
 
     VkRenderPass getRenderPass() const;
+
 private:
-    VkRenderPass mRenderPass; //Consider turning this into a cache
+    VkSubpassDescription createSubPassDescription(VkAttachmentReference *attachmentReference);
+    VkAttachmentDescription createAttachmentDescription();
+    VkRenderPass mRenderPass;
     VkDevice mDevice;
 };
 

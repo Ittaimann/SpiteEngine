@@ -50,7 +50,8 @@ void VulkanRenderer::initFrontBuffer()
     mFrontRenderPass.init(mDevice.getDevice());
     for (int i = 0; i < swapChainImageViews.size(); i++)
     {
-        mFrontFrameBuffers.at(i).init(mDevice.getDevice(), swapChainExtent.width, swapChainExtent.height, mFrontRenderPass, swapChainImageViews[i]);
+        std::vector<VkImageView> indivdualImage = {swapChainImageViews[i]};
+        mFrontFrameBuffers.at(i).init(mDevice.getDevice(), swapChainExtent.width, swapChainExtent.height, mFrontRenderPass, indivdualImage);
     }
 }
 
@@ -58,7 +59,7 @@ void VulkanRenderer::cleanup()
 {
     mFrontFrameBuffers.clear();
     mFrontRenderPass.cleanup();
-    vkDestroySemaphore(mDevice.getDevice(),mQueueSubmitSemaphore,nullptr);
+    vkDestroySemaphore(mDevice.getDevice(), mQueueSubmitSemaphore, nullptr);
 
     mCommandPool.cleanup(mDevice.getDevice());
     mSwapChain.cleanup(mDevice.getDevice());
@@ -68,9 +69,16 @@ void VulkanRenderer::cleanup()
     mInstance.cleanup();
 }
 
-void VulkanRenderer::buildModel(VulkanVertexBuffer &vertexBuffer, ModelLoad *model)
+void VulkanRenderer::buildModel(VulkanVertexBuffer &vertexBuffer, ModelLoad *model, bool deviceLocal)
 {
+
     vertexBuffer.init(model, &mAllocator);
+    if(deviceLocal)
+    {
+        //dataTransfer transfer = {nullptr, &vertexBuffer.getBuffer()};
+        //mCopyCommandQueue.push_back(transfer);
+    }
+    //TODO: models have to do a lot of extra stuff like switch to device local memory + cache vertex binding and attribute binding.
 }
 
 //TODO: expand this drastically, this will probably be a large amount of the texture builds
@@ -90,11 +98,11 @@ void VulkanRenderer::buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t w
     framebuffer.init(mDevice.getDevice(), width, height, renderpass, imageViews);
 }
 
-VulkanFramebuffer* VulkanRenderer::getFrontBuffer()
+VulkanFramebuffer *VulkanRenderer::getFrontBuffer()
 {
     return &mFrontFrameBuffers.at(mCurrentFrame);
 }
-VulkanRenderPass* VulkanRenderer::getFrontRenderPass()
+VulkanRenderPass *VulkanRenderer::getFrontRenderPass()
 {
     return &mFrontRenderPass;
 }
@@ -113,7 +121,7 @@ void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText)
 // we will probably want a command buffer abstract that has its own begins and ends.
 // request a command buffer struct that is stored inside of the commmandpool class that
 // has all the needed extras (fences and semaphores?)
-void VulkanRenderer::beginFrame()
+void VulkanRenderer::beginRecording()
 {
     VkCommandBufferBeginInfo commandBufferBeginInfo = {};
     commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -122,7 +130,7 @@ void VulkanRenderer::beginFrame()
     commandBufferBeginInfo.flags = 0;
     vkBeginCommandBuffer(mCommandPool.getCommandBuffer(), &commandBufferBeginInfo);
 }
-void VulkanRenderer::endFrame()
+void VulkanRenderer::endRecording()
 {
     vkEndCommandBuffer(mCommandPool.getCommandBuffer());
 }
@@ -151,7 +159,7 @@ void VulkanRenderer::endRenderPass()
 void VulkanRenderer::bindVertexBuffer(VulkanVertexBuffer &vertexBuffer)
 {
     VkDeviceSize offsets = 0;
-    VkBuffer baseBuffer = vertexBuffer.getBuffer();
+    VkBuffer baseBuffer = vertexBuffer.getVkBuffer();
     vkCmdBindVertexBuffers(mCommandPool.getCommandBuffer(), 0, 1, &baseBuffer, &offsets);
 }
 
@@ -165,9 +173,18 @@ void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline)
     vkCmdBindPipeline(mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
 }
 
-void VulkanRenderer::startNewFrame()
+void VulkanRenderer::beginFrame()
 {
     mSwapChain.acquireImageIndex(mDevice.getDevice());
+    
+    //TODO: update from staging here: 
+    mCopyCommandQueue.clear(); // do transfers for all buffers and submit
+}
+
+void VulkanRenderer::endFrame()
+{
+    submitFrame();
+    presentFrame();
 }
 
 void VulkanRenderer::submitFrame()
@@ -209,6 +226,6 @@ void VulkanRenderer::presentFrame()
     vkQueuePresentKHR(mPresentQueue.getQueue(), &presentInfo);
     //TODO: do proper sync other wise this is going to be the noose
     vkDeviceWaitIdle(mDevice.getDevice());
-    mCurrentFrame = (mCurrentFrame + 1) % 3; // TODO: figure out the proper max frames in flight
 
+    mCurrentFrame = (mCurrentFrame + 1) % 3; // TODO: figure out the proper max frames in flight
 }

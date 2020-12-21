@@ -12,9 +12,13 @@ public:
     void cleanup(VkDevice device);
 
     VkCommandBuffer getCommandBuffer();
+    VkCommandBuffer getTransientCommandBuffer(VkDevice device);
 private:
     VkCommandPool mCommandPool;
-    VkCommandBuffer mCommandBuffer; // TODO: do a proper pool of these. 
+    VkCommandBuffer mCommandBuffer; // TODO: do a proper pool of these.
+    VkCommandBuffer mTransientCommandBuffer; // TODO: do a proper pool of these.
+
+    // todo: create a VkFence and maybe a semaphore per commandBuffer? 
 };
 
 #endif

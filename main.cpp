@@ -3,8 +3,10 @@
 //TODO: clean up this file so that we don't need to worry so much about including extra vulkan stuff.
 #include "VulkanRenderer/VulkanRenderer.h"
 
-//NEXT: Get the command buffer submission and sync handled.
-//TODO: error handling inside the renderer needs to happen. Right now we are just flying and that is a mega mistake. shit could be dying badly.
+//NEXT: REFACTOR, get the framebuffer,renderpass, and pipeline interop better. Instead of writing to a front buffer all the time write to a back buffer and flush to front
+//NEXT: find where you are using constnats and stop doing that. properly set things. 
+//NEXT: error handling inside the renderer needs to happen. Right now we are just flying and that is a mega mistake. shit could be dying badly.
+
 //TODO: get a code review...
 int main()
 {
@@ -27,14 +29,14 @@ int main()
     // and pass those into the renderer as like a "build the driver version", then return a pointer to the default?
     // Maybe have it so that its a struct of data we pass into the apis and  then have a driver pointer attach
     {
-        
+
         VulkanGraphicsPipeline pipeline;
         std::vector<VulkanShader> shaders(2);
         renderer.buildShader(shaders[0], &vert);
         renderer.buildShader(shaders[1], &frag);
         renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders);
         VulkanVertexBuffer vertexBuffer;
-        renderer.buildModel(vertexBuffer, &loaded);
+        renderer.buildModel(vertexBuffer, &loaded, true);
         //TODO: render loop and exit from glfw input
         while (window.getWindowClosed())
         {
@@ -42,8 +44,8 @@ int main()
             window.pollEvents();
 
             // rendering
-            renderer.startNewFrame();
             renderer.beginFrame();
+            renderer.beginRecording();
 
 
             renderer.beginRenderPass(*renderer.getFrontRenderPass(),*renderer.getFrontBuffer());
@@ -53,11 +55,11 @@ int main()
             renderer.draw();
 
             renderer.endRenderPass();
+            renderer.endRecording();
             renderer.endFrame();
-            renderer.submitFrame();
-            renderer.presentFrame();
+
          }
-    }
+    }   
     renderer.cleanup();
 
     window.cleanup();

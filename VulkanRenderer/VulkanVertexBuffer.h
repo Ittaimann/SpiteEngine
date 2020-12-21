@@ -13,7 +13,8 @@ public:
     ~VulkanVertexBuffer();
     void init(const ModelLoad* model, VmaAllocator* alloc);
     void cleanup();
-    VkBuffer getBuffer();
+    VkBuffer getVkBuffer();
+    VulkanBuffer getBuffer();
 private:
     VulkanBuffer mBuffer;
 };

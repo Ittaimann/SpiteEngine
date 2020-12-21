@@ -27,8 +27,8 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
 
     VkVertexInputBindingDescription vertexInputBindingInfo = {}; // vertex buffer info
     vertexInputBindingInfo.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    vertexInputBindingInfo.binding = 0;                //ooofers
-    vertexInputBindingInfo.stride = sizeof(glm::vec3); //TODO: this is wrong;
+    vertexInputBindingInfo.binding = 0;
+    vertexInputBindingInfo.stride = sizeof(glm::vec3); 
 
     VkVertexInputAttributeDescription vertexInputAttributeInfo = {}; // vertice info
     vertexInputAttributeInfo.location = 0;
