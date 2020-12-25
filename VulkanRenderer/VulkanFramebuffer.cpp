@@ -8,6 +8,7 @@ VulkanFramebuffer::~VulkanFramebuffer()
     cleanup();
 }
 
+//REFACTOR: this will have to change to reflect the render graph-ish changes
 void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height, const VulkanRenderPass &renderPass, const std::vector<VkImageView> &imageViews)
 {
     mDevice = device;
@@ -16,7 +17,7 @@ void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height, c
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     framebufferInfo.flags = 0;
     framebufferInfo.pNext = nullptr;
-    framebufferInfo.renderPass = renderPass.getRenderPass(); // TODO: make a way to make sure the framebuffer is properly tuned to the renderpass.
+    framebufferInfo.renderPass = renderPass.getRenderPass();
     framebufferInfo.attachmentCount = imageViews.size();
     framebufferInfo.pAttachments = mAttachments.data();
     framebufferInfo.width = width;

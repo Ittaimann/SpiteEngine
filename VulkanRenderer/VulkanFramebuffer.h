@@ -7,7 +7,6 @@
 #include "VulkanImage.h"
 #include "VulkanRenderPass.h"
 
-//TODO: again this is probably going to be hashmap
 class VulkanFramebuffer
 {
 public:

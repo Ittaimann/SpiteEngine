@@ -25,8 +25,8 @@ private:
     VkDevice mDevice;
     std::vector<VkCommandBuffer> mFreeCommandBufferQueue;
     std::vector<VkCommandBuffer> mUsedCommandBufferQueue;
-    VkCommandBuffer mCommandBuffer;          // TODO: do a proper pool of these.
-    // todo: create a VkFence and maybe a semaphore per commandBuffer?
+    VkCommandBuffer mCommandBuffer;
+    //TODO: if we have stand alone submits we may want to add semaphores here
 };
 
 #endif

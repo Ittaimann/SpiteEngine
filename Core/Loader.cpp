@@ -3,7 +3,7 @@
 #include <iostream>
 #include <filesystem>
 
-//Loader: UGH WHAT DO THESE DO, YOU SHOULD PROBABLY LEARN
+//Knowledge: UGH WHAT DO THESE DO, YOU SHOULD PROBABLY LEARN
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -17,9 +17,9 @@ ModelLoad Loader::loadModel(const std::string& file)
 {
     std::cout << "Current path is " << std::filesystem::current_path() << std::endl;
 
-    int extensionLoc = file.rfind("."); //Loader: might want a better less failure possible way to do this
+    int extensionLoc = file.rfind("."); //TODO: might want a better less failure possible way to do this
     std::string extenstion = file.substr(extensionLoc+1);
-    //Loader: definitly going to want to revisit this entire concept. Probably going to need to find a way to map string to enum?
+    //TODO: definitly going to want to revisit this entire concept. Probably going to need to find a way to map string to enum?
     ModelLoad result;
     if(extenstion == "gltf")
     {
@@ -30,7 +30,7 @@ ModelLoad Loader::loadModel(const std::string& file)
     }
   return result ;
 }
-//Loader: build an error case for this
+//TODO: build an error case for this
 ModelLoad Loader::loadGltfModel(const std::string& path)
 {
   tinygltf::TinyGLTF loader;

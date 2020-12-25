@@ -64,7 +64,7 @@ VkCommandBuffer VulkanCommandPool::allocateCommandBuffer()
     return commandBuffer;
 }
 
-//TODO: figure out if you want to be able to pass a specific one in here.
+//TODO: figure out if you want to be able to pass a specific one in here. so we can kinda control it from renderer
 void VulkanCommandPool::beginRecording()
 {
     VkCommandBufferBeginInfo commandBufferBeginInfo = {};

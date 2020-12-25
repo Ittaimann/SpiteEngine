@@ -8,7 +8,6 @@ VulkanSwapChain::~VulkanSwapChain()
 {
 }
 
-//TODO: maybe just pass in mPhysical device. would clean this up and make it more understandable
 void VulkanSwapChain::init(VkDevice device, VkSurfaceKHR surface, const VulkanHelper::SwapChainSupportDetails &swapChainSupport,
                            VulkanHelper::QueueFamilyIndices indices, uint32_t width, uint32_t height)
 {
@@ -110,7 +109,6 @@ VkSwapchainKHR VulkanSwapChain::getSwapChain()
     return mSwapChain;
 }
 
-//TODO: figure out the rotating swap chain
 std::vector<VkImageView> VulkanSwapChain::getImageViews()
 {
     return mSwapChainImageViews;

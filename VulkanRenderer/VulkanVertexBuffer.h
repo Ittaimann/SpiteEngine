@@ -16,6 +16,7 @@ public:
     VkBuffer getVkBuffer();
     VulkanBuffer getBuffer();
     VulkanBuffer* getBufferPtr();
+    //TODO: revist some of this staging and unstaging stuff. seems like this definitly needs to cleaned up.
     void unstageVertexBuffer(VkCommandBuffer);
     void cleanupStaging();
 

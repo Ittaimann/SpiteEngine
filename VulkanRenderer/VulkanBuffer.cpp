@@ -51,10 +51,6 @@ VkBuffer VulkanBuffer::getBuffer()
     return mBuffer;
 }
 
-//NEXT: fix this stuff, this staging buffer stuff might need to get moved up the chain to make
-// the usage bits make sense for the vkBuffer. maybe have a staging buffer and update buffer
-// on the thing holding this and then have the buffer users update it? But how do I cache
-// those commands? Am I going to need to do function pointers ffs
 void VulkanBuffer::unstageBuffer(VkCommandBuffer commandBuffer, VulkanBuffer& src)
 {
     VkBufferCopy bufferCopy = {};

@@ -3,11 +3,11 @@
 //TODO: clean up this file so that we don't need to worry so much about including extra vulkan stuff.
 #include "VulkanRenderer/VulkanRenderer.h"
 
-//NEXT: REFACTOR, get the framebuffer,renderpass, and pipeline interop better. Instead of writing to a front buffer all the time write to a back buffer and flush to front
-//NEXT: find where you are using constnats and stop doing that. properly set things. 
-//NEXT: error handling inside the renderer needs to happen. Right now we are just flying and that is a mega mistake. shit could be dying badly.
-
+//REFACTOR:, get the framebuffer,renderpass, and pipeline interop better. Instead of writing to a front buffer all the time write to a back buffer and flush to front
+//REFACTOR: find where you are using constnats and stop doing that. properly set things.
+//REFACTOR: error handling inside the renderer needs to happen. Right now we are just flying and that is a mega mistake. shit could be dying badly.
 //TODO: get a code review...
+//NEXT: Camera/camera controls, load an index buffer model.
 int main()
 {
     //TODO: config file
@@ -37,7 +37,7 @@ int main()
         renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders);
         VulkanVertexBuffer vertexBuffer;
         renderer.buildModel(vertexBuffer, &loaded, true);
-        //TODO: render loop and exit from glfw input
+
         while (window.getWindowClosed())
         {
             // input
@@ -46,22 +46,17 @@ int main()
             // rendering
             renderer.beginFrame();
             renderer.beginRecording();
-
-
-            renderer.beginRenderPass(*renderer.getFrontRenderPass(),*renderer.getFrontBuffer());
-
+            renderer.beginRenderPass(*renderer.getFrontRenderPass(), *renderer.getFrontBuffer());
             renderer.bindVertexBuffer(vertexBuffer);
             renderer.bindPipeline(pipeline);
             renderer.draw();
-
             renderer.endRenderPass();
             renderer.endRecording();
             renderer.endFrame();
+        }
+    }
 
-         }
-    }   
     renderer.cleanup();
-
     window.cleanup();
     return 0;
 }

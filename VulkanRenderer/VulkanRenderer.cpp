@@ -74,10 +74,10 @@ void VulkanRenderer::buildModel(VulkanVertexBuffer &vertexBuffer, ModelLoad *mod
     vertexBuffer.init(model, &mAllocator, deviceLocal);
     if (deviceLocal)
     {
-        dataTransfer transfer {&vertexBuffer};
+        dataTransfer transfer{&vertexBuffer};
         mCopyCommandQueue.push_back(transfer);
     }
-    //TODO: models have to do a lot of extra stuff like switch to device local memory + cache vertex binding and attribute binding.
+    //TODO: models have to do a lot of extra stuff like cache vertex binding and attribute binding.
 }
 
 //TODO: expand this drastically, this will probably be a large amount of the texture builds
@@ -91,9 +91,9 @@ void VulkanRenderer::buildRenderPass(VulkanRenderPass &renderpass)
     renderpass.init(mDevice.getDevice());
 }
 
-void VulkanRenderer::buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/)
+void VulkanRenderer::buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach)
 {
-    std::vector<VkImageView> imageViews = {mSwapChain.getImageViews().at(0), bufferAttach.getImageView()};
+    std::vector<VkImageView> imageViews = {bufferAttach.getImageView()};
     framebuffer.init(mDevice.getDevice(), width, height, renderpass, imageViews);
 }
 
@@ -116,10 +116,6 @@ void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText)
     shader.init(mDevice.getDevice(), shaderText->getSize(), shaderText->getData());
 }
 
-//TODO: these imply only one command buffer, thats not how this is going to go.
-// we will probably want a command buffer abstract that has its own begins and ends.
-// request a command buffer struct that is stored inside of the commmandpool class that
-// has all the needed extras (fences and semaphores?)
 void VulkanRenderer::beginRecording()
 {
     mCommandPool.beginRecording(); // maybe return a handle to the command buffer?
@@ -188,9 +184,10 @@ void VulkanRenderer::endFrame()
     // clear the staging buffers from the frame.
     for (int i = 0; i < mCopyCommandQueue.size(); i++)
     {
-        mCopyCommandQueue.at(i).vertexBuffer->cleanupStaging ();
+        mCopyCommandQueue.at(i).vertexBuffer->cleanupStaging();
     }
     mCopyCommandQueue.clear();
+    mCurrentFrame = (mCurrentFrame + 1) % 3; // TODO: figure out the proper max frames in flight
 }
 
 void VulkanRenderer::submitFrame()
@@ -232,6 +229,4 @@ void VulkanRenderer::presentFrame()
     vkQueuePresentKHR(mPresentQueue.getQueue(), &presentInfo);
     //TODO: do proper sync other wise this is going to be the noose
     vkDeviceWaitIdle(mDevice.getDevice());
-
-    mCurrentFrame = (mCurrentFrame + 1) % 3; // TODO: figure out the proper max frames in flight
 }
