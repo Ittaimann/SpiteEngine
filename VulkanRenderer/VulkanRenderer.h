@@ -1,5 +1,7 @@
 #ifndef VULKAN_RENDERER_H
 #define VULKAN_RENDERER_H
+#include <functional>
+
 
 #include "VulkanHelpers.h"
 #include "VulkanInstance.h"
@@ -79,11 +81,10 @@ private:
     VulkanRenderPass mFrontRenderPass;
     uint32_t mCurrentFrame;
 
-    //TODO: re-architect this? seems weird
-    //pointers to the buffer or image that require memory transfer operations 
+    //TODO: re-architect this? seems weird, maybe switch to buffer src, buffer dst/imagedst? 
+    // Will need to have knowledge that the staging buffer for the object is now cleared though.
     struct dataTransfer{
-        VulkanImage* Image = nullptr;
-        VulkanBuffer* buffer = nullptr;
+        VulkanVertexBuffer* vertexBuffer = nullptr;
     };
     std::vector<dataTransfer> mCopyCommandQueue; //TODO: figure out async commands for transfer.
 };
