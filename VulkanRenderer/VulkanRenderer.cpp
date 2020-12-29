@@ -74,7 +74,7 @@ void VulkanRenderer::buildModel(VulkanVertexBuffer &vertexBuffer, ModelLoad *mod
     vertexBuffer.init(model, &mAllocator, deviceLocal);
     if (deviceLocal)
     {
-        dataTransfer transfer{&vertexBuffer};
+        dataTransfer transfer{vertexBuffer.getStagingPtr(),vertexBuffer.getBufferPtr(),nullptr};
         mCopyCommandQueue.push_back(transfer);
     }
     //TODO: models have to do a lot of extra stuff like cache vertex binding and attribute binding.
@@ -170,7 +170,8 @@ void VulkanRenderer::beginFrame()
     VkCommandBuffer copyBuffer = mCommandPool.getCommandBuffer();
     for (int i = 0; i < mCopyCommandQueue.size(); i++)
     {
-        mCopyCommandQueue.at(i).vertexBuffer->unstageVertexBuffer(copyBuffer);
+        //TODO: create a path for images.
+        mCopyCommandQueue.at(i).dst->unstageBuffer(copyBuffer, *mCopyCommandQueue.at(i).src);
     }
     mCommandPool.endRecording();
 }
@@ -184,7 +185,7 @@ void VulkanRenderer::endFrame()
     // clear the staging buffers from the frame.
     for (int i = 0; i < mCopyCommandQueue.size(); i++)
     {
-        mCopyCommandQueue.at(i).vertexBuffer->cleanupStaging();
+        mCopyCommandQueue.at(i).src->cleanup();
     }
     mCopyCommandQueue.clear();
     mCurrentFrame = (mCurrentFrame + 1) % 3; // TODO: figure out the proper max frames in flight

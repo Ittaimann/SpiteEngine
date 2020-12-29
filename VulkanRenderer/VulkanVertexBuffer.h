@@ -14,11 +14,11 @@ public:
     void init(const ModelLoad* model, VmaAllocator* alloc, bool staging);
     void cleanup();
     VkBuffer getVkBuffer();
+    
+    //TODO: getting pointers vs getting reference is getting annoying. Fix you desctructor
     VulkanBuffer getBuffer();
     VulkanBuffer* getBufferPtr();
-    //TODO: revist some of this staging and unstaging stuff. seems like this definitly needs to cleaned up.
-    void unstageVertexBuffer(VkCommandBuffer);
-    void cleanupStaging();
+    VulkanBuffer* getStagingPtr();
 
 private:
     VulkanBuffer mBuffer;

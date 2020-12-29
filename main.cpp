@@ -3,7 +3,7 @@
 //TODO: clean up this file so that we don't need to worry so much about including extra vulkan stuff.
 #include "VulkanRenderer/VulkanRenderer.h"
 
-//REFACTOR:, get the framebuffer,renderpass, and pipeline interop better. Instead of writing to a front buffer all the time write to a back buffer and flush to front
+//REFACTOR: get the framebuffer,renderpass, and pipeline interop better. Instead of writing to a front buffer all the time write to a back buffer and flush to front
 //REFACTOR: find where you are using constnats and stop doing that. properly set things.
 //REFACTOR: error handling inside the renderer needs to happen. Right now we are just flying and that is a mega mistake. shit could be dying badly.
 //TODO: get a code review...

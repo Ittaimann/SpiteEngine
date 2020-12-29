@@ -84,7 +84,9 @@ private:
     //TODO: re-architect this? seems weird, maybe switch to buffer src, buffer dst/imagedst? 
     // Will need to have knowledge that the staging buffer for the object is now cleared though.
     struct dataTransfer{
-        VulkanVertexBuffer* vertexBuffer = nullptr;
+        VulkanBuffer* src;
+        VulkanBuffer* dst;
+        VulkanImage* dstImage;
     };
     std::vector<dataTransfer> mCopyCommandQueue; //TODO: figure out async commands for transfer.
 };

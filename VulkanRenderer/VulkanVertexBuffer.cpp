@@ -36,13 +36,7 @@ VulkanBuffer *VulkanVertexBuffer::getBufferPtr()
 {
     return &mBuffer;
 }
-
-void VulkanVertexBuffer::unstageVertexBuffer(VkCommandBuffer commandBuffer)
+VulkanBuffer* VulkanVertexBuffer::getStagingPtr()
 {
-    mBuffer.unstageBuffer(commandBuffer, mStaging);
-}
-
-void VulkanVertexBuffer::cleanupStaging()
-{
-    mStaging.cleanup();
+    return &mStaging;
 }
