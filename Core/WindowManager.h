@@ -11,11 +11,11 @@ public:
     void init(uint32_t width, uint32_t height);
     void cleanup();
 
-    GLFWwindow* getWindow();
+    GLFWwindow* getWindow() const;
 
     // //could probably pair these
-    uint32_t getWidth();
-    uint32_t getHeight();
+    uint32_t getWidth() const;
+    uint32_t getHeight() const;
     bool getWindowClosed();
     void pollEvents();
 private:

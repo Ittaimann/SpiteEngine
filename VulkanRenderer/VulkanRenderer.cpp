@@ -116,6 +116,7 @@ void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText)
     shader.init(mDevice.getDevice(), shaderText->getSize(), shaderText->getData());
 }
 
+//TODO: maybe change this to begin and end Command Recording. makes it more obvious this is  command buffer.s
 void VulkanRenderer::beginRecording()
 {
     mCommandPool.beginRecording(); // maybe return a handle to the command buffer?
@@ -125,7 +126,7 @@ void VulkanRenderer::endRecording()
     mCommandPool.endRecording();
 }
 
-//TODO: tight renderpass and framebuffer together
+//TODO: ties renderpass and framebuffer together
 void VulkanRenderer::beginRenderPass(VulkanRenderPass &renderpass, VulkanFramebuffer &framebuffer)
 {
     VkRenderPassBeginInfo renderPassBeginInfo = {};

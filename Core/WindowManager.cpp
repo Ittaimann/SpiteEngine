@@ -22,17 +22,17 @@ void WindowManager::cleanup()
     glfwTerminate(); // maybe mose this else where?
 }
 
-GLFWwindow* WindowManager::getWindow()
+GLFWwindow* WindowManager::getWindow() const
 {
     return mWindow;
 }
 
-uint32_t WindowManager::getWidth()
+uint32_t WindowManager::getWidth() const
 {
     return mWidth;
 }
 
-uint32_t WindowManager::getHeight()
+uint32_t WindowManager::getHeight() const
 {
     return mHeight;
 }

@@ -1,11 +1,13 @@
 #include "Core/WindowManager.h"
 #include "Core/Loader.h"
+#include "core/Camera.h"
 //TODO: clean up this file so that we don't need to worry so much about including extra vulkan stuff.
 #include "VulkanRenderer/VulkanRenderer.h"
 
 //REFACTOR: get the framebuffer,renderpass, and pipeline interop better. Instead of writing to a front buffer all the time write to a back buffer and flush to front
 //REFACTOR: find where you are using constnats and stop doing that. properly set things.
 //REFACTOR: error handling inside the renderer needs to happen. Right now we are just flying and that is a mega mistake. shit could be dying badly.
+//REFACTOR: consider figuring out a better way to do passing stuff in. I'm getting sick and tired of having brain confusion over & and * this is a symptom of the destructors
 //TODO: get a code review...
 //NEXT: Camera/camera controls, load an index buffer model.
 int main()
@@ -34,14 +36,19 @@ int main()
         std::vector<VulkanShader> shaders(2);
         renderer.buildShader(shaders[0], &vert);
         renderer.buildShader(shaders[1], &frag);
+        // pass in camera descriptor set styling here I guess?
         renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders);
         VulkanVertexBuffer vertexBuffer;
         renderer.buildModel(vertexBuffer, &loaded, true);
-
+        Camera mainCamera;
+        mainCamera.init(window);
         while (window.getWindowClosed())
         {
             // input
             window.pollEvents();
+            mainCamera.update();
+            //NEXT: GET THE CAMERA INPUT WORKING HERE, THEN HAVE THAT CAMERA DATA SET INTO THE REST
+            // OF THE RENDERER AND THE SHADERS. I know you don't wannt really do it but just fucking handle it.
 
             // rendering
             renderer.beginFrame();
@@ -49,6 +56,7 @@ int main()
             renderer.beginRenderPass(*renderer.getFrontRenderPass(), *renderer.getFrontBuffer());
             renderer.bindVertexBuffer(vertexBuffer);
             renderer.bindPipeline(pipeline);
+            // set camera location, maybe set up a graphics data class and pass that the camera
             renderer.draw();
             renderer.endRenderPass();
             renderer.endRecording();
