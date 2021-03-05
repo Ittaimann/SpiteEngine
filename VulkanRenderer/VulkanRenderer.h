@@ -74,7 +74,7 @@ private:
     VulkanSurface mSurface;
     VulkanCommandPool mCommandPool;
     VulkanSwapChain mSwapChain;
-    VmaAllocator mAllocator; // optimize: maybe switch this to be a pointer and foward declare.
+    VmaAllocator mAllocator; // OPTIMIZE: maybe switch this to be a pointer and foward declare.
 
     VkSemaphore mQueueSubmitSemaphore;
     std::vector<VulkanFramebuffer> mFrontFrameBuffers; //TODO: replace this with a proper max frames in flight (find where that might be)
@@ -82,7 +82,7 @@ private:
     uint32_t mCurrentFrame;
 
     //TODO: re-architect this? seems weird, maybe switch to buffer src, buffer dst/imagedst? 
-    // Will need to have knowledge that the staging buffer for the object is now cleared though.
+    // Will need to have KNOWLEDGE that the staging buffer for the object is now cleared though.
     struct dataTransfer{
         VulkanBuffer* src;
         VulkanBuffer* dst;

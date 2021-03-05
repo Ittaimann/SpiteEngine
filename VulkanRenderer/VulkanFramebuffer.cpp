@@ -22,7 +22,7 @@ void VulkanFramebuffer::init(VkDevice device, uint32_t width, uint32_t height, c
     framebufferInfo.pAttachments = mAttachments.data();
     framebufferInfo.width = width;
     framebufferInfo.height = height;
-    framebufferInfo.layers = 1; //Knowledge: how does this matter/where would I use this?
+    framebufferInfo.layers = 1; //KNOWLEDGE: how does this matter/where would I use this?
 
     mRenderArea.extent = {width, height};
     mRenderArea.offset = {0, 0};

@@ -20,7 +20,7 @@
 class Loader
 {
 public:
-    ModelLoad loadModel(const std::string& file); //optimize: could probably char* this and remove string in header
+    ModelLoad loadModel(const std::string& file); //OPTIMIZE: could probably char* this and remove string in header
     ShaderLoad loadShader (const std::string& file); //TODO: add an online compile option.
 private:
     std::vector<char> readFile(const std::string& filename);

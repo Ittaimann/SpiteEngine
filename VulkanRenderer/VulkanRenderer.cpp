@@ -195,7 +195,7 @@ void VulkanRenderer::endFrame()
 void VulkanRenderer::submitFrame()
 {
     std::vector<VkCommandBuffer> submissionBuffers = mCommandPool.getUsedCommandBuffers();
-    //Knowledge: look into this a tad bit more. This seems like it could be omega important.
+    //KNOWLEDGE: look into this a tad bit more. This seems like it could be omega important.
     VkSemaphore waitSemaphore[] = {mSwapChain.getSwapChainSemaphore()};
     VkSemaphore signalSemaphore[] = {mQueueSubmitSemaphore};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};

@@ -23,7 +23,7 @@ void VulkanRenderPass::init(VkDevice device)
     VkAttachmentReference color = {0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
     VkSubpassDescription subPassDesc = createSubPassDescription(&color);
-    //Knowledge: learn more about subpass and dependecies. seems strong
+    //KNOWLEDGE: learn more about subpass and dependecies. seems strong
     VkRenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.flags = 0;
@@ -54,7 +54,7 @@ VkRenderPass VulkanRenderPass::getRenderPass() const
 
 VkSubpassDescription VulkanRenderPass::createSubPassDescription(VkAttachmentReference *attachmentReference)
 {
-    //Knowledge: learn what each of these attachents are (specifically preserve?)
+    //KNOWLEDGE: learn what each of these attachents are (specifically preserve?)
     VkSubpassDescription subPassDesc = {};
     subPassDesc.flags = 0;
     subPassDesc.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;

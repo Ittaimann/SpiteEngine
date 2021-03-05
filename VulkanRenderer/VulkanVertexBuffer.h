@@ -3,7 +3,7 @@
 
 #include "VulkanBuffer.h"
 
-class ModelLoad; // optimize: do we need model load? we could probably break down to components earlier?
+class ModelLoad; // OPTIMIZE: do we need model load? we could probably break down to components earlier?
 class vmaAllocator;
 
 class VulkanVertexBuffer

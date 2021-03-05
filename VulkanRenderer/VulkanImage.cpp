@@ -25,10 +25,10 @@ void VulkanImage::init(const VmaAllocator *allocator, VkDevice device, uint32_t 
     imageInfo.extent = {width, height, 1}; // last one is depth
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
-    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT; //Knowledge: multi sample framebuffer? investigate
+    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT; //KNOWLEDGE: multi sample framebuffer? investigate
     imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
     imageInfo.usage = usage;
-    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; //Knowledge: what exactly is this for
+    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE; //KNOWLEDGE: what exactly is this for
     imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
     VmaAllocationCreateInfo allocInfo = {};

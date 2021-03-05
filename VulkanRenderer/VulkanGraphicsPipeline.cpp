@@ -145,7 +145,7 @@ VkPipelineInputAssemblyStateCreateInfo VulkanGraphicsPipeline::createInputAssemb
     inputAssemblyStateInfo.pNext = nullptr;
     inputAssemblyStateInfo.flags = 0;
     inputAssemblyStateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    inputAssemblyStateInfo.primitiveRestartEnable = VK_FALSE; //Knowledge: da fuq is this
+    inputAssemblyStateInfo.primitiveRestartEnable = VK_FALSE; //KNOWLEDGE: da fuq is this
     return inputAssemblyStateInfo;
 }
 
@@ -165,7 +165,7 @@ VkPipelineViewportStateCreateInfo VulkanGraphicsPipeline::createViewportStateInf
 
 VkPipelineRasterizationStateCreateInfo VulkanGraphicsPipeline::createRasterizationStateInfo()
 {
-    VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = {}; //Knowledge: refresh on some of these
+    VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = {}; //KNOWLEDGE: refresh on some of these
     rasterizationStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     rasterizationStateInfo.pNext = nullptr;
     rasterizationStateInfo.flags = 0;
