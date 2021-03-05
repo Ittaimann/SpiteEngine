@@ -19,7 +19,7 @@ int main()
 
     WindowManager window;
     window.init(480, 320);
-    Input::init(&window);z
+    Input::init(&window);
     // TODO: Figure out a standard way to deal with paths to the cache.
     Loader loader;
     ModelLoad loaded = loader.loadModel("../../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
