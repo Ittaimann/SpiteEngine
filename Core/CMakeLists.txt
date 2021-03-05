@@ -7,6 +7,7 @@ add_library(
     ModelLoad.cpp
     ShaderLoad.cpp
     Camera.cpp
+    Input.cpp
 )
 
 target_link_libraries(Core glfw ${GLFW_LIBRARIES})

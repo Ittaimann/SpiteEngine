@@ -1,6 +1,8 @@
 #include "Core/WindowManager.h"
+#include "Core/Input.h"
 #include "Core/Loader.h"
 #include "core/Camera.h"
+
 //TODO: clean up this file so that we don't need to worry so much about including extra vulkan stuff.
 #include "VulkanRenderer/VulkanRenderer.h"
 
@@ -17,7 +19,7 @@ int main()
 
     WindowManager window;
     window.init(480, 320);
-
+    Input::init(&window);z
     // TODO: Figure out a standard way to deal with paths to the cache.
     Loader loader;
     ModelLoad loaded = loader.loadModel("../../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
@@ -41,7 +43,6 @@ int main()
         VulkanVertexBuffer vertexBuffer;
         renderer.buildModel(vertexBuffer, &loaded, true);
         Camera mainCamera;
-        mainCamera.init(window);
         while (window.getWindowClosed())
         {
             // input
@@ -65,6 +66,7 @@ int main()
     }
 
     renderer.cleanup();
+    Input::cleanup();
     window.cleanup();
     return 0;
 }

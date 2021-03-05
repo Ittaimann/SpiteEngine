@@ -9,7 +9,7 @@ public:
     Camera();
     ~Camera();
 
-    void init(const WindowManager& window);
+    void init();
     void cleanup();
     void update();
     
