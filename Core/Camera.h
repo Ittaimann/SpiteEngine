@@ -15,6 +15,6 @@ public:
     
 private:
     //TODO: replace with a proper position struct/transform
-    float posX, posY, posZ;
+    float mPosX, mPosY, mPosZ;
 };
 #endif

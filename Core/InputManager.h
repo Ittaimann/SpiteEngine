@@ -2,21 +2,23 @@
 #define INPUT_H
 
 #include <GLFW/glfw3.h>
-
-class WindowManager;
+#include "WindowManager.h"
 
 //TODO: capture all input and set up a way to get what is currently runnning maybe some kind of struct of inputs
-//TODO: rename to input manager to more appropriatly show what this is.
 //TODO: rethink some of the singleton styling here. Seems like we could probably have this owned by something.
-class Input
+class InputManager
 {
-    static Input *InputSingleton;
 public:
-    static Input *getInputManger();
-    static void init(WindowManager* manager);
-    static void cleanup();
-private:
+    static InputManager *getInputManger();
 
+    void init(WindowManager *manager);
+    void cleanup();
+
+    bool getKeyDown(int keyDown);
+
+private:
+    static InputManager *InputSingleton;
+    WindowManager *mWindow;
 };
 
 #endif
