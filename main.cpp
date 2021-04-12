@@ -1,7 +1,7 @@
 #include "Core/WindowManager.h"
 #include "Core/InputManager.h"
 #include "Core/Loader.h"
-#include "core/Camera.h"
+#include "Core/Camera.h"
 
 //TODO: clean up this file so that we don't need to worry so much about including extra vulkan stuff.
 #include "VulkanRenderer/VulkanRenderer.h"

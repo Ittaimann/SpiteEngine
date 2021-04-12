@@ -10,7 +10,9 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 .vscode
+.lvimrc
 /Build
 /Assets
 /AssetCache
 /docs
+/.cache
