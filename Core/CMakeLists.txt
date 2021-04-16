@@ -8,6 +8,7 @@ add_library(
     ShaderLoad.cpp
     Camera.cpp
     InputManager.cpp
+    GameObject.cpp
 )
 
 target_link_libraries(Core glfw ${GLFW_LIBRARIES})

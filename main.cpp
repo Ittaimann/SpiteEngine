@@ -2,10 +2,10 @@
 #include "Core/InputManager.h"
 #include "Core/Loader.h"
 #include "Core/Camera.h"
-
+#include "Core/GameObject.h"
 //TODO: clean up this file so that we don't need to worry so much about including extra vulkan stuff.
-#include "VulkanRenderer/VulkanRenderer.h"
 
+#include "VulkanRenderer/VulkanRenderer.h"
 //REFACTOR: get the framebuffer,renderpass, and pipeline interop better. Instead of writing to a front buffer all the time write to a back buffer and flush to front
 //REFACTOR: find where you are using constnats and stop doing that. properly set things.
 //REFACTOR: error handling inside the renderer needs to happen. Right now we are just flying and that is a mega mistake. shit could be dying badly.
@@ -25,9 +25,9 @@ int main()
 
     // TODO: Figure out a standard way to deal with paths to the cache.
     Loader loader;
-    ModelLoad loaded = loader.loadModel("../../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
-    ShaderLoad vert = loader.loadShader("../../AssetCache/vert.spv");
-    ShaderLoad frag = loader.loadShader("../../AssetCache/frag.spv");
+    ModelLoad loaded = loader.loadModel("../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
+    ShaderLoad vert = loader.loadShader("../AssetCache/vert.spv");
+    ShaderLoad frag = loader.loadShader("../AssetCache/frag.spv");
 
     VulkanRenderer renderer;
     renderer.init(validation, &window);

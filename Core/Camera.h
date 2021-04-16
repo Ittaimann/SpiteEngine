@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include "WindowManager.h"
+#include "Transform.h"
 
 class Camera
 {
@@ -15,6 +16,6 @@ public:
     
 private:
     //TODO: replace with a proper position struct/transform
-    float mPosX, mPosY, mPosZ;
+	Transform mTransform;
 };
 #endif
