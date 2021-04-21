@@ -45,16 +45,24 @@ int main()
         renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders);
         VulkanVertexBuffer vertexBuffer;
         renderer.buildModel(vertexBuffer, &loaded, true);
+	
+		// buffer for the position data
+		VulkanBuffer cameraLoc;
+		renderer.buildBuffer(cameraLoc, sizeof(glm::vec3));
+
+		Transform objectLocation;// temp world transform for the object
         Camera mainCamera;
-        while (window.getWindowClosed())
+		
+		while (window.getWindowClosed())
         {
             // input
             window.pollEvents();
             mainCamera.update();
-            //NEXT: GET THE CAMERA INPUT WORKING HERE, THEN HAVE THAT CAMERA DATA SET INTO THE REST
-            // OF THE RENDERER AND THE SHADERS. I know you don't wannt really do it but just fucking handle it.
+			// NEXT: get the object main camera and object's model to view, the projection matrix;
+			// currently following this tutorial: https://learnopengl.com/Getting-started/Camera to get camera ideas down;
+			glm::vec3 cameraPostion = mainCamera.getPosition();
 
-            // rendering
+			// rendering
             renderer.beginFrame();
             renderer.beginRecording();
             renderer.beginRenderPass(*renderer.getFrontRenderPass(), *renderer.getFrontBuffer());

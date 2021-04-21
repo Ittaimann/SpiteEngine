@@ -2,7 +2,6 @@
 #define VULKAN_RENDERER_H
 #include <functional>
 
-
 #include "VulkanHelpers.h"
 #include "VulkanInstance.h"
 #include "VulkanDevice.h"
@@ -40,7 +39,7 @@ public:
     void buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
     void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
     void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
-
+	void buildBuffer(VulkanBuffer& buffer, size_t size, void* data = nullptr);
 
     // TODO: rename these/repuprose these, change them to begin recording or something
     void beginFrame();

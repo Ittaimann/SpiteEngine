@@ -1,6 +1,7 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
-
+//REFACTOR: heavy depended here. do we want it?
+#include <glm/glm.hpp>
 //TODO: get this to be struct of arrays not array of structs
 // foolish child don't you know that data oriented is the way
 // of the future
@@ -8,6 +9,9 @@
 // getters/setters to come later?
 struct Transform
 {
+	glm::mat4x4 mMatrix;
+//replaced with a glm mat4x4
+/*
 	float PosX,PosY,PosZ;
 	float DegX,DegY,DegZ; // replace with quat at some point
 	float ScaleX,ScaleY,ScaleZ;
@@ -25,6 +29,7 @@ struct Transform
 		ScaleY = 1;
 		ScaleZ = 1;
 	}
+*/
 };
 
 #endif

@@ -1,5 +1,5 @@
 find_package(glfw3 3.3 REQUIRED)
-
+find_package(glm REQUIRED)
 add_library(
     Core
     WindowManager.cpp
