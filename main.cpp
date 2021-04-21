@@ -50,10 +50,10 @@ int main()
 		VulkanBuffer cameraLoc;
 		renderer.buildBuffer(cameraLoc, sizeof(glm::vec3));
 
-		Transform objectLocation;// temp world transform for the object
+        Transform objectLocation;// temp world transform for the object
         Camera mainCamera;
 		
-		while (window.getWindowClosed())
+        while (window.getWindowClosed())
         {
             // input
             window.pollEvents();

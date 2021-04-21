@@ -13,7 +13,7 @@ public:
     void init();
     void cleanup();
     void update();
-	glm::vec3 getPosition();    
+    glm::vec3 getPosition();    
 private:
     //TODO: replace with a proper position struct/transform
 //	Transform mTransform;
