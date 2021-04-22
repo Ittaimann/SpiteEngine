@@ -39,7 +39,7 @@ public:
     void buildFramebuffer(VulkanFramebuffer &framebuffer, uint32_t width, uint32_t height, const VulkanRenderPass &renderpass, const VulkanImage &bufferAttach /*,const std::vector<VkImageView>& imageViews*/);
     void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
     void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
-    void buildBuffer(VulkanBuffer& buffer, size_t size, void* data = nullptr);
+    void buildBuffer(VulkanBuffer& buffer, size_t size, VkBufferUsageFlags tempUsageFlag, void* data = nullptr);
 
     // TODO: rename these/repuprose these, change them to begin recording or something
     void beginFrame();

@@ -3,7 +3,7 @@
 #include "Core/ModelLoad.h"
 VulkanVertexBuffer::VulkanVertexBuffer() {}
 VulkanVertexBuffer::~VulkanVertexBuffer() {}
-
+//TODO: double check some of this staging stuff. These flags don't look correct to me:
 void VulkanVertexBuffer::init(const ModelLoad *model, VmaAllocator *alloc, bool staging)
 {
     if (staging)

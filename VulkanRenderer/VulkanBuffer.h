@@ -11,8 +11,11 @@ public:
     ~VulkanBuffer();
     void init(VmaAllocator* allocator, void *data, uint32_t size, VkBufferUsageFlags usage, VmaMemoryUsage VmaUsage);
     void cleanup();
+    
+
     VkBuffer getBuffer();
     void unstageBuffer(VkCommandBuffer commandBuffer, VulkanBuffer& src);
+    void writeToBuffer(void* data, size_t size);
 
 private:
     VmaAllocation mVmaAlloc;

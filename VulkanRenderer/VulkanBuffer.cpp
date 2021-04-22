@@ -59,3 +59,10 @@ void VulkanBuffer::unstageBuffer(VkCommandBuffer commandBuffer, VulkanBuffer& sr
     bufferCopy.size = mSize;
     vkCmdCopyBuffer(commandBuffer, src.getBuffer(), mBuffer, 1, &bufferCopy);
 }
+
+void VulkanBuffer::writeToBuffer(void* data, size_t size)
+{
+    vmaMapMemory(*mAllocator, mVmaAlloc, &data);
+    memcpy(data, &mBuffer, size);
+    vmaUnmapMemory(*mAllocator, mVmaAlloc);
+}

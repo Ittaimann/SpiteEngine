@@ -25,9 +25,9 @@ int main()
 
     // TODO: Figure out a standard way to deal with paths to the cache.
     Loader loader;
-    ModelLoad loaded = loader.loadModel("../Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
-    ShaderLoad vert = loader.loadShader("../AssetCache/vert.spv");
-    ShaderLoad frag = loader.loadShader("../AssetCache/frag.spv");
+    ModelLoad loaded = loader.loadModel("Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
+    ShaderLoad vert = loader.loadShader("AssetCache/vert.spv");
+    ShaderLoad frag = loader.loadShader("AssetCache/frag.spv");
 
     VulkanRenderer renderer;
     renderer.init(validation, &window);
@@ -48,7 +48,7 @@ int main()
 	
 		// buffer for the position data
 		VulkanBuffer cameraLoc;
-		renderer.buildBuffer(cameraLoc, sizeof(glm::vec3));
+		renderer.buildBuffer(cameraLoc, sizeof(glm::vec3),VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
         Transform objectLocation;// temp world transform for the object
         Camera mainCamera;
@@ -61,7 +61,9 @@ int main()
 			// NEXT: get the object main camera and object's model to view, the projection matrix;
 			// currently following this tutorial: https://learnopengl.com/Getting-started/Camera to get camera ideas down;
 			glm::vec3 cameraPostion = mainCamera.getPosition();
-
+			// get data and write it to the cameraLoc buffer;
+			cameraLoc.writeToBuffer(static_cast<void*>(&cameraPostion), sizeof(glm::vec3));
+			
 			// rendering
             renderer.beginFrame();
             renderer.beginRecording();
