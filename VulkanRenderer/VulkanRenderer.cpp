@@ -118,7 +118,7 @@ void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText)
 
 void VulkanRenderer::buildBuffer(VulkanBuffer& buffer, size_t size, VkBufferUsageFlags tempUsageFlag, void* data)
 {
-	buffer.init(&mAllocator, data, size, tempUsageFlag,VMA_MEMORY_USAGE_CPU_TO_GPU);
+    buffer.init(&mAllocator, data, size, tempUsageFlag,VMA_MEMORY_USAGE_CPU_TO_GPU);
 }
 
 //TODO: maybe change this to begin and end Command Recording. makes it more obvious this is  command buffer.s
