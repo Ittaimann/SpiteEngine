@@ -37,7 +37,24 @@ void VulkanRenderer::init(bool validation, WindowManager *window)
 
     VkSemaphoreCreateInfo semaphoreInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, nullptr, 0};
     vkCreateSemaphore(mDevice.getDevice(), &semaphoreInfo, nullptr, &mQueueSubmitSemaphore);
+ 
 
+    //TODO: break this off into another function or structure somewhere.
+    VkDescriptorPoolSize descriptorPoolSizeInfo = {};
+    descriptorPoolSizeInfo.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorPoolSizeInfo.descriptorCount = 1;
+
+    VkDescriptorPoolCreateInfo descriptorPoolInfo = {};
+    descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descriptorPoolInfo.pNext = nullptr;
+    descriptorPoolInfo.flags = 0;
+    descriptorPoolInfo.pPoolSizes = &descriptorPoolSizeInfo;
+    descriptorPoolInfo.poolSizeCount = 1;
+    descriptorPoolInfo.maxSets = 65535;//TODO: find programmitc way to do this. 
+    //TODO: wrap this in an assert
+    vkCreateDescriptorPool(mDevice.getDevice(),&descriptorPoolInfo, nullptr,&mDescriptorPool);
+
+    mDescriptorSet = VK_NULL_HANDLE;
     mCurrentFrame = 0;
     initFrontBuffer();
 }
@@ -61,6 +78,9 @@ void VulkanRenderer::cleanup()
     mFrontRenderPass.cleanup();
     vkDestroySemaphore(mDevice.getDevice(), mQueueSubmitSemaphore, nullptr);
 
+    vkDestroyDescriptorSetLayout(mDevice.getDevice(),mDescriptorSetLayout,nullptr);
+    vkDestroyDescriptorPool(mDevice.getDevice(), mDescriptorPool,nullptr);
+    
     mCommandPool.cleanup(mDevice.getDevice());
     mSwapChain.cleanup(mDevice.getDevice());
     vmaDestroyAllocator(mAllocator);
@@ -159,14 +179,46 @@ void VulkanRenderer::bindVertexBuffer(VulkanVertexBuffer &vertexBuffer)
     vkCmdBindVertexBuffers(mCommandPool.getCommandBuffer(), 0, 1, &baseBuffer, &offsets);
 }
 
-void VulkanRenderer::draw()
-{
-    vkCmdDraw(mCommandPool.getCommandBuffer(), 3, 1, 0, 0);
-}
-
 void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline)
 {
     vkCmdBindPipeline(mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
+}
+
+void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum, VulkanBuffer *vulkanBuffers)
+{
+    //build layout binding
+    //TODO: this is very important so maybe just like care
+    VkDescriptorSetLayoutBinding layoutBindingInfo = {};
+    layoutBindingInfo.binding = 0;
+    layoutBindingInfo.descriptorCount = 1;
+    layoutBindingInfo.pImmutableSamplers = nullptr;
+    layoutBindingInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    layoutBindingInfo.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;  //KNOWLEDGE: double check if this is necessary;
+
+    //build layout
+    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.pNext = nullptr;
+    layoutInfo.flags = 0;
+    layoutInfo.bindingCount = bufferDescNum;
+    layoutInfo.pBindings = &layoutBindingInfo;
+    
+    vkCreateDescriptorSetLayout(mDevice.getDevice(), &layoutInfo, nullptr, &mDescriptorSetLayout);
+   
+    //build descriptor
+    VkDescriptorSetAllocateInfo descriptorAllocInfo = {};
+    descriptorAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    descriptorAllocInfo.pNext = nullptr;
+    descriptorAllocInfo.descriptorPool = mDescriptorPool;
+    descriptorAllocInfo.descriptorSetCount = 1;
+    descriptorAllocInfo.pSetLayouts = &mDescriptorSetLayout;
+
+    vkAllocateDescriptorSets(mDevice.getDevice(), &descriptorAllocInfo, &mDescriptorSet);
+}
+
+void VulkanRenderer::draw()
+{
+    vkCmdDraw(mCommandPool.getCommandBuffer(), 3, 1, 0, 0);
 }
 
 void VulkanRenderer::beginFrame()

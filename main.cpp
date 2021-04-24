@@ -52,7 +52,8 @@ int main()
 
         Transform objectLocation;// temp world transform for the object
         Camera mainCamera;
-		
+        renderer.buildDescriptorSet(1,&cameraLoc);
+        
         while (window.getWindowClosed())
         {
             // input
@@ -61,9 +62,13 @@ int main()
 			// NEXT: get the object main camera and object's model to view, the projection matrix;
 			// currently following this tutorial: https://learnopengl.com/Getting-started/Camera to get camera ideas down;
 			glm::vec3 cameraPostion = mainCamera.getPosition();
-			// get data and write it to the cameraLoc buffer;
 			cameraLoc.writeToBuffer(static_cast<void*>(&cameraPostion), sizeof(glm::vec3));
-			
+	        
+	        // build a descriptor set pool, layout, and set.
+	        // pool might just be a kinda singleton(?), where we have different descriptor pools in it
+	        // layout is just hand written for now. might need to rely on spriv reflection, then based on material meta data
+	        // set is hand coded, then reliant on spirv reflection, then probably meta data based on material meta data.
+
 			// rendering
             renderer.beginFrame();
             renderer.beginRecording();

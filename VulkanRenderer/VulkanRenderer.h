@@ -40,6 +40,7 @@ public:
     void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
     void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
     void buildBuffer(VulkanBuffer& buffer, size_t size, VkBufferUsageFlags tempUsageFlag, void* data = nullptr);
+    void buildDescriptorSet(uint32_t bufferDescNum, VulkanBuffer* vulkanBuffers); // TODO: add textures and other descriptors
 
     // TODO: rename these/repuprose these, change them to begin recording or something
     void beginFrame();
@@ -54,7 +55,7 @@ public:
     void startNewFrame();
     void submitFrame();
     void presentFrame();
-
+    
     //TODO: const this down te whole at some point. this
     void bindVertexBuffer(VulkanVertexBuffer& vertexBuffer);
     void bindPipeline(VulkanGraphicsPipeline& pipeline);
@@ -74,7 +75,7 @@ private:
     VulkanCommandPool mCommandPool;
     VulkanSwapChain mSwapChain;
     VmaAllocator mAllocator; // OPTIMIZE: maybe switch this to be a pointer and foward declare.
-
+    VkDescriptorPool mDescriptorPool;
     VkSemaphore mQueueSubmitSemaphore;
     std::vector<VulkanFramebuffer> mFrontFrameBuffers; //TODO: replace this with a proper max frames in flight (find where that might be)
     VulkanRenderPass mFrontRenderPass;
@@ -88,6 +89,10 @@ private:
         VulkanImage* dstImage;
     };
     std::vector<dataTransfer> mCopyCommandQueue; //TODO: figure out async commands for transfer.
+    
+
+    VkDescriptorSetLayout mDescriptorSetLayout;//TODO: move temp to hold layout
+    VkDescriptorSet mDescriptorSet; //TODO: move temp to hold the descriptor;
 };
 
 #endif // vulkan driver
