@@ -19,7 +19,7 @@ VkPipeline VulkanGraphicsPipeline::getGraphicsPipeline()
     return mPipeline;
 }
 
-void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders)
+void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders, VkDescriptorSetLayout descriptorSetLayout)
 {
     mDevice = device;
 
@@ -82,8 +82,8 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
     //TODO: REMOVE THIS SO WE CAN ACTUALLY LOAD UNIFORMS
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;            // Optional
-    pipelineLayoutInfo.pSetLayouts = nullptr;         // Optional
+    pipelineLayoutInfo.setLayoutCount = 1;
+    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
     VkPipelineLayout lol;

@@ -11,7 +11,7 @@ class VulkanGraphicsPipeline
 public:
     VulkanGraphicsPipeline();
     ~VulkanGraphicsPipeline();
-    void init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders);
+    void init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders,VkDescriptorSetLayout descriptorSetLayout);
     void cleanup();
     VkPipeline getGraphicsPipeline();
 private:

@@ -40,7 +40,7 @@ public:
     void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
     void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
     void buildBuffer(VulkanBuffer& buffer, size_t size, VkBufferUsageFlags tempUsageFlag, void* data = nullptr);
-    void buildDescriptorSet(uint32_t bufferDescNum, VulkanBuffer* vulkanBuffers); // TODO: add textures and other descriptors
+    void buildDescriptorSet(uint32_t bufferDescNum); // TODO: add textures and other descriptors
 
     // TODO: rename these/repuprose these, change them to begin recording or something
     void beginFrame();
@@ -59,6 +59,9 @@ public:
     //TODO: const this down te whole at some point. this
     void bindVertexBuffer(VulkanVertexBuffer& vertexBuffer);
     void bindPipeline(VulkanGraphicsPipeline& pipeline);
+    void bindDescriptorSet();
+
+    void updateDescriptors(uint32_t descriptorWriteCount, VulkanBuffer* bufferInput);
 
     VulkanFramebuffer* getFrontBuffer(); //return based on current frame
     VulkanRenderPass* getFrontRenderPass();

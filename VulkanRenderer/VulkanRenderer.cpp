@@ -9,6 +9,10 @@
 #include "VulkanRenderPass.h"
 #include "VulkanFramebuffer.h"
 
+//TODO:remove this, temporary
+#include <glm/vec3.hpp>
+
+
 VulkanRenderer::VulkanRenderer()
 {
 }
@@ -128,7 +132,8 @@ VulkanRenderPass *VulkanRenderer::getFrontRenderPass()
 
 void VulkanRenderer::buildPipeline(VulkanGraphicsPipeline &pipeline, const VulkanRenderPass &renderpass, const std::vector<VulkanShader> &shaders)
 {
-    pipeline.init(mDevice.getDevice(), renderpass.getRenderPass(), shaders);
+    //TODO: figure out how we are dealing with the descriptor layout
+    pipeline.init(mDevice.getDevice(), renderpass.getRenderPass(), shaders, mDescriptorSetLayout);
 }
 
 void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText)
@@ -184,7 +189,7 @@ void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline)
     vkCmdBindPipeline(mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
 }
 
-void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum, VulkanBuffer *vulkanBuffers)
+void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum)
 {
     //build layout binding
     //TODO: this is very important so maybe just like care
@@ -215,7 +220,26 @@ void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum, VulkanBuffer *vu
 
     vkAllocateDescriptorSets(mDevice.getDevice(), &descriptorAllocInfo, &mDescriptorSet);
 }
+void VulkanRenderer::updateDescriptors(uint32_t descriptorWriteCount, VulkanBuffer* bufferInput)
+{
+    VkDescriptorBufferInfo bufferWriteInfo = {};
+    bufferWriteInfo.buffer = bufferInput->getBuffer();
+    bufferWriteInfo.offset = 0;
+    bufferWriteInfo.range = sizeof(glm::vec3);
 
+    VkWriteDescriptorSet descriptorWrite = {};
+    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite.dstSet = mDescriptorSet;
+    descriptorWrite.descriptorCount = descriptorWriteCount;
+    descriptorWrite.pBufferInfo = &bufferWriteInfo;
+    descriptorWrite.pImageInfo = nullptr;
+    descriptorWrite.pTexelBufferView = nullptr;
+    descriptorWrite.dstBinding = 0;
+    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    
+    vkUpdateDescriptorSets(mDevice.getDevice(), descriptorWriteCount, &descriptorWrite, 0, nullptr);
+}
 void VulkanRenderer::draw()
 {
     vkCmdDraw(mCommandPool.getCommandBuffer(), 3, 1, 0, 0);
