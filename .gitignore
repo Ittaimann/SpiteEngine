@@ -16,4 +16,5 @@ _deps
 /AssetCache
 /docs
 /.cache
+/.config
 *.*.rdbg
