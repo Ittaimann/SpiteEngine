@@ -138,7 +138,7 @@ bool VulkanPhysicalDevice::isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKH
 
 VkPhysicalDevice VulkanPhysicalDevice::FindGraphicsDevice(VkInstance instance, VkSurfaceKHR surface)
 {
-    VkPhysicalDevice result;
+    VkPhysicalDevice result = VK_NULL_HANDLE;
 
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -147,7 +147,7 @@ VkPhysicalDevice VulkanPhysicalDevice::FindGraphicsDevice(VkInstance instance, V
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
-    for (int i = 0; i < devices.size(); i++)
+    for (size_t i = 0; i < devices.size(); i++)
     {
         if (isDeviceSuitable(devices[i], surface))
         {

@@ -20,6 +20,18 @@
 // THE SOFTWARE.
 //
 
+//TODO: build a proper wrapper around these supressions
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wall"
+#pragma clang diagnostic ignored "-Wnullability-extension"
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wnested-anon-types"
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+
+#endif
+
 #ifndef AMD_VULKAN_MEMORY_ALLOCATOR_H
 #define AMD_VULKAN_MEMORY_ALLOCATOR_H
 
@@ -19198,4 +19210,6 @@ VMA_CALL_PRE void VMA_CALL_POST vmaDestroyImage(
     }
 }
 
+#ifdef __clang__
 #endif // #ifdef VMA_IMPLEMENTATION
+#endif

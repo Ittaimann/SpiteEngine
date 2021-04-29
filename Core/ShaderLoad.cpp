@@ -5,7 +5,7 @@ const void* ShaderLoad::getData() const
     return mData.data();
 }
 
-const uint32_t ShaderLoad::getSize() const
+uint32_t ShaderLoad::getSize() const
 {
     return mSize;
 }

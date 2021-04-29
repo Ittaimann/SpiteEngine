@@ -10,7 +10,7 @@ public:
 	~GameObject();
 
 private:
-	Transform mTransform;
+//	Transform mTransform;
 };
 
 #endif

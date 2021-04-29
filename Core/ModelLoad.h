@@ -11,7 +11,7 @@ class ModelLoad
 {
 public:
     const std::vector<unsigned char>& getData() const;
-    const uint32_t getSize() const;
+    uint32_t getSize() const;
     void setData(const std::vector<unsigned char>& data);
 private:
     std::vector<unsigned char> mData;

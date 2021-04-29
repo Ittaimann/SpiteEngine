@@ -73,7 +73,7 @@ void VulkanSwapChain::init(VkDevice device, VkSurfaceKHR surface, const VulkanHe
 
 void VulkanSwapChain::cleanup(VkDevice device)
 {
-    for (int i = 0; i < mSwapChainImages.size(); i++)
+    for (size_t i = 0; i < mSwapChainImages.size(); i++)
     {
         vkDestroyImageView(device, mSwapChainImageViews[i], nullptr);
     }
@@ -85,7 +85,7 @@ void VulkanSwapChain::cleanup(VkDevice device)
 void VulkanSwapChain::createImageViews(VkDevice device)
 {
     mSwapChainImageViews.resize(mSwapChainImages.size());
-    for (int i = 0; i < mSwapChainImages.size(); i++)
+    for (size_t i = 0; i < mSwapChainImages.size(); i++)
     {
         VkImageViewCreateInfo imageViewInfo{};
         imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

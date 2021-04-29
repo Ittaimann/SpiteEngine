@@ -5,7 +5,7 @@
 class ShaderLoad
 {
 public:
-    const uint32_t getSize() const;
+    uint32_t getSize() const;
     const void* getData() const;
     void setData(const std::vector<char>& data);
     std::vector<char> compileShader(); 

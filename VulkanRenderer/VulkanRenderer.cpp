@@ -69,7 +69,7 @@ void VulkanRenderer::initFrontBuffer()
     mFrontFrameBuffers.resize(swapChainImageViews.size());
     VkExtent2D swapChainExtent = mSwapChain.getSwapChainExtent();
     mFrontRenderPass.init(mDevice.getDevice());
-    for (int i = 0; i < swapChainImageViews.size(); i++)
+    for (size_t i = 0; i < swapChainImageViews.size(); i++)
     {
         std::vector<VkImageView> indivdualImage = {swapChainImageViews[i]};
         mFrontFrameBuffers.at(i).init(mDevice.getDevice(), swapChainExtent.width, swapChainExtent.height, mFrontRenderPass, indivdualImage);
@@ -250,7 +250,7 @@ void VulkanRenderer::beginFrame()
     mSwapChain.acquireImageIndex(mDevice.getDevice());
     mCommandPool.beginRecording();
     VkCommandBuffer copyBuffer = mCommandPool.getCommandBuffer();
-    for (int i = 0; i < mCopyCommandQueue.size(); i++)
+    for (size_t i = 0; i < mCopyCommandQueue.size(); i++)
     {
         //TODO: create a path for images.
         mCopyCommandQueue.at(i).dst->unstageBuffer(copyBuffer, *mCopyCommandQueue.at(i).src);
@@ -265,7 +265,7 @@ void VulkanRenderer::endFrame()
     mCommandPool.endFrame();
 
     // clear the staging buffers from the frame.
-    for (int i = 0; i < mCopyCommandQueue.size(); i++)
+    for (size_t i = 0; i < mCopyCommandQueue.size(); i++)
     {
         mCopyCommandQueue.at(i).src->cleanup();
     }

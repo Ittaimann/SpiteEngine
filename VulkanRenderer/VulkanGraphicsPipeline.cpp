@@ -50,7 +50,7 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
 
     //TODO: these blends will probably need to be controlled by my meta shader data. interesting its per attachment, might make it difficult. maybe need to make a rendergraph and have a dependency check
     std::vector<VkPipelineColorBlendAttachmentState> blendAttachments(1);
-    for (int i = 0; i < blendAttachments.size(); i++)
+    for (size_t i = 0; i < blendAttachments.size(); i++)
     {
         blendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         blendAttachments[i].blendEnable = VK_FALSE;
@@ -109,7 +109,7 @@ void VulkanGraphicsPipeline::cleanup()
 std::vector<VkPipelineShaderStageCreateInfo> VulkanGraphicsPipeline::createShaderStageInfo(const std::vector<VulkanShader> &shaders)
 {
     std::vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageInfo(shaders.size());
-    for (int i = 0; i < shaders.size(); i++)
+    for (size_t i = 0; i < shaders.size(); i++)
     {
         pipelineShaderStageInfo[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         pipelineShaderStageInfo[i].pNext = nullptr;
