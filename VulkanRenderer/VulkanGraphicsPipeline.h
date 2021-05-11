@@ -14,6 +14,7 @@ public:
     void init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders,VkDescriptorSetLayout descriptorSetLayout);
     void cleanup();
     VkPipeline getGraphicsPipeline();
+    VkPipelineLayout getGraphicsPipelineLayout();
 private:
     std::vector<VkPipelineShaderStageCreateInfo> createShaderStageInfo(const std::vector<VulkanShader> &shaders);
     VkPipelineVertexInputStateCreateInfo createVertexInputStateInfo(VkVertexInputBindingDescription &vertexInputBindingInfo, VkVertexInputAttributeDescription &vertexInputAttributeInfo);
@@ -26,6 +27,7 @@ private:
 
     VkPipeline mPipeline;
     VkDevice mDevice;
+    VkPipelineLayout mPipelineLayout;
 };
 
 #endif

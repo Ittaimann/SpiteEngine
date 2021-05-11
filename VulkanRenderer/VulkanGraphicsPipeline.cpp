@@ -18,6 +18,10 @@ VkPipeline VulkanGraphicsPipeline::getGraphicsPipeline()
 {
     return mPipeline;
 }
+VkPipelineLayout VulkanGraphicsPipeline::getGraphicsPipelineLayout()
+{
+    return mPipelineLayout;
+}
 
 void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders, VkDescriptorSetLayout descriptorSetLayout)
 {
@@ -86,10 +90,9 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-    VkPipelineLayout lol;
-    vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &lol);
+    vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &mPipelineLayout);
 
-    pipelineInfo.layout = lol;
+    pipelineInfo.layout = mPipelineLayout;
     pipelineInfo.renderPass = renderpass;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = nullptr;
@@ -98,11 +101,11 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
     vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &mPipeline);
 
     //TODO: REMOVE THIS NONSENSE
-    vkDestroyPipelineLayout(device, lol, nullptr);
 }
 
 void VulkanGraphicsPipeline::cleanup()
 {
+    vkDestroyPipelineLayout(mDevice, mPipelineLayout,nullptr);
     vkDestroyPipeline(mDevice, mPipeline, nullptr);
 }
 

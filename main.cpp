@@ -49,8 +49,8 @@ int main() {
         std::vector<VulkanShader> shaders(2);
         renderer.buildShader(shaders[0], &vert);
         renderer.buildShader(shaders[1], &frag);
-        renderer.buildDescriptorSet(
-            1); // TODO: prebuild the descriptor, its needed for the pipeline
+        renderer.buildDescriptorSet(1);
+        // TODO: prebuild the descriptor, its needed for the pipeline
         // pass in camera descriptor set styling here I guess?
         renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(),
                                shaders);
@@ -91,6 +91,7 @@ int main() {
                                      *renderer.getFrontBuffer());
             renderer.bindVertexBuffer(vertexBuffer);
             renderer.bindPipeline(pipeline);
+            renderer.bindDescriptorSet(pipeline);
             // set camera location, maybe set up a graphics data class and pass
             // that the camera
             renderer.draw();

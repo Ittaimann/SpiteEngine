@@ -59,7 +59,7 @@ public:
     //TODO: const this down te whole at some point. this
     void bindVertexBuffer(VulkanVertexBuffer& vertexBuffer);
     void bindPipeline(VulkanGraphicsPipeline& pipeline);
-    void bindDescriptorSet();
+    void bindDescriptorSet(VulkanGraphicsPipeline& pipeline);
 
     void updateDescriptors(uint32_t descriptorWriteCount, VulkanBuffer* bufferInput);
 
