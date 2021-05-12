@@ -62,7 +62,9 @@ void VulkanBuffer::unstageBuffer(VkCommandBuffer commandBuffer, VulkanBuffer& sr
 
 void VulkanBuffer::writeToBuffer(void* data, size_t size)
 {
-    vmaMapMemory(*mAllocator, mVmaAlloc, &data);
-    memcpy(data, &mBuffer, size);
+    void* mappedData;
+    vmaMapMemory(*mAllocator, mVmaAlloc, &mappedData);
+    memcpy(mappedData, data, size);
+    vmaFlushAllocation(*mAllocator,mVmaAlloc,0,size);
     vmaUnmapMemory(*mAllocator, mVmaAlloc);
 }
