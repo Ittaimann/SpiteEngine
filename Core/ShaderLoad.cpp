@@ -15,3 +15,5 @@ void ShaderLoad::setData(const std::vector<char>& data)
     mData = data;
     mSize = data.size();
 }
+
+

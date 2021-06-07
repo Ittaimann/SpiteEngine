@@ -65,7 +65,7 @@ int main() {
 
         Transform objectLocation; // temp world transform for the object
         Camera mainCamera;
-
+        glm::mat4 trans = glm::mat4(1.0f);
         while (window.getWindowClosed()) {
             // input
             window.pollEvents();
@@ -75,6 +75,7 @@ int main() {
             // https://learnopengl.com/Getting-started/Camera to get camera
             // ideas down;
             glm::vec3 cameraPostion = mainCamera.getPosition();
+            
             cameraLoc.writeToBuffer(static_cast<void *>(&cameraPostion),
                                     sizeof(glm::vec3));
             renderer.updateDescriptors(1, &cameraLoc);

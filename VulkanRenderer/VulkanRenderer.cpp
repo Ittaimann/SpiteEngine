@@ -33,7 +33,7 @@ void VulkanRenderer::init(bool validation, WindowManager *window) {
     mSwapChain.init(mDevice.getDevice(), mSurface.getVulkanSurface(),
                     mPhysicalDevice.getSwapChainDetails(), queueFamilies,
                     window->getWidth(), window->getHeight());
-
+    initDescriptorPool();//TODO maybe.. no?
     VmaAllocatorCreateInfo allocatorInfo = {};
     allocatorInfo.physicalDevice = mPhysicalDevice.getPhysicalDevice();
     allocatorInfo.device = mDevice.getDevice();
@@ -46,24 +46,8 @@ void VulkanRenderer::init(bool validation, WindowManager *window) {
     vkCreateSemaphore(mDevice.getDevice(), &semaphoreInfo, nullptr,
                       &mQueueSubmitSemaphore);
 
-    // TODO: break this off into another function or structure somewhere.
-    VkDescriptorPoolSize descriptorPoolSizeInfo = {};
-    descriptorPoolSizeInfo.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    descriptorPoolSizeInfo.descriptorCount = 1;
-
-    VkDescriptorPoolCreateInfo descriptorPoolInfo = {};
-    descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    descriptorPoolInfo.pNext = nullptr;
-    descriptorPoolInfo.flags = 0;
-    descriptorPoolInfo.pPoolSizes = &descriptorPoolSizeInfo;
-    descriptorPoolInfo.poolSizeCount = 1;
-    descriptorPoolInfo.maxSets = 65535; // TODO: find programmitc way to do
-                                        // this.
-    // TODO: wrap this in an assert
-    vkCreateDescriptorPool(mDevice.getDevice(), &descriptorPoolInfo, nullptr,
-                           &mDescriptorPool);
-
-    mDescriptorSet = VK_NULL_HANDLE;
+    mDescriptorSet[0] = VK_NULL_HANDLE;
+    mDescriptorSet[1] = VK_NULL_HANDLE;
     mCurrentFrame = 0;
     initFrontBuffer();
 }
@@ -79,6 +63,27 @@ void VulkanRenderer::initFrontBuffer() {
             mDevice.getDevice(), swapChainExtent.width, swapChainExtent.height,
             mFrontRenderPass, indivdualImage);
     }
+}
+
+void VulkanRenderer::initDescriptorPool()
+{
+
+    //TODO: allow for textures and other descriptor types possibly
+    VkDescriptorPoolSize descriptorPoolSizeInfo = {};
+    descriptorPoolSizeInfo.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorPoolSizeInfo.descriptorCount = 10;
+
+    VkDescriptorPoolCreateInfo descriptorPoolInfo = {};
+    descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descriptorPoolInfo.pNext = nullptr;
+    descriptorPoolInfo.flags = 0;
+    descriptorPoolInfo.pPoolSizes = &descriptorPoolSizeInfo;
+    descriptorPoolInfo.poolSizeCount = 1;
+    descriptorPoolInfo.maxSets = 65535; // TODO: find programmitc way to do
+                                        // this.
+    // TODO: wrap this in an assert
+    vkCreateDescriptorPool(mDevice.getDevice(), &descriptorPoolInfo, nullptr,
+                           &mDescriptorPool);
 }
 
 void VulkanRenderer::cleanup() {
@@ -167,10 +172,7 @@ void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum) {
     layoutBindingInfo.descriptorCount = 1;
     layoutBindingInfo.pImmutableSamplers = nullptr;
     layoutBindingInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    layoutBindingInfo.stageFlags =
-        VK_SHADER_STAGE_FRAGMENT_BIT; // KNOWLEDGE: double check if this is
-                                      // necessary;
-
+    layoutBindingInfo.stageFlags = VK_SHADER_STAGE_ALL;
     // build layout
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -187,11 +189,11 @@ void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum) {
     descriptorAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     descriptorAllocInfo.pNext = nullptr;
     descriptorAllocInfo.descriptorPool = mDescriptorPool;
-    descriptorAllocInfo.descriptorSetCount = 1;
+    descriptorAllocInfo.descriptorSetCount = 2;
     descriptorAllocInfo.pSetLayouts = &mDescriptorSetLayout;
 
     vkAllocateDescriptorSets(mDevice.getDevice(), &descriptorAllocInfo,
-                             &mDescriptorSet);
+                             mDescriptorSet);
 }
 // TODO: maybe change this to begin and end Command Recording. makes it more
 // obvious this is  command buffer.s
@@ -242,7 +244,7 @@ void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline) {
 void VulkanRenderer::bindDescriptorSet(VulkanGraphicsPipeline &pipeline) {
     vkCmdBindDescriptorSets(
         mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-        pipeline.getGraphicsPipelineLayout(), 0, 1, &mDescriptorSet, 0, 0);
+        pipeline.getGraphicsPipelineLayout(), 0, 2 , mDescriptorSet, 0, 0);
 }
 void VulkanRenderer::updateDescriptors(uint32_t descriptorWriteCount,
                                        VulkanBuffer *bufferInput) {
@@ -253,7 +255,7 @@ void VulkanRenderer::updateDescriptors(uint32_t descriptorWriteCount,
 
     VkWriteDescriptorSet descriptorWrite = {};
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = mDescriptorSet;
+    descriptorWrite.dstSet = mDescriptorSet[0];//TODO: NOT THIS
     descriptorWrite.descriptorCount = descriptorWriteCount;
     descriptorWrite.pBufferInfo = &bufferWriteInfo;
     descriptorWrite.pImageInfo = nullptr;
