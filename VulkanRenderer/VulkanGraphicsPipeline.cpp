@@ -1,3 +1,4 @@
+#include <iostream>
 #include "VulkanGraphicsPipeline.h"
 
 //TODO: move these glm defines out, these should NOT BE HERE
@@ -23,7 +24,7 @@ VkPipelineLayout VulkanGraphicsPipeline::getGraphicsPipelineLayout()
     return mPipelineLayout;
 }
 
-void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders, VkDescriptorSetLayout descriptorSetLayout)
+void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, const std::vector<VulkanShader> &shaders, VkDescriptorSetLayout* descriptorSetLayout)
 {
     mDevice = device;
 
@@ -87,11 +88,13 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+    pipelineLayoutInfo.pSetLayouts = descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-    vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &mPipelineLayout);
-
+    
+    VkResult lmao = vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &mPipelineLayout);
+    assert(lmao == VK_SUCCESS);
+    
     pipelineInfo.layout = mPipelineLayout;
     pipelineInfo.renderPass = renderpass;
     pipelineInfo.subpass = 0;
@@ -100,7 +103,6 @@ void VulkanGraphicsPipeline::init(VkDevice device, VkRenderPass renderpass, cons
 
     vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &mPipeline);
 
-    //TODO: REMOVE THIS NONSENSE
 }
 
 void VulkanGraphicsPipeline::cleanup()

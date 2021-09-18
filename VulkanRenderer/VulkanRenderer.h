@@ -95,7 +95,7 @@ private:
     std::vector<dataTransfer> mCopyCommandQueue; //TODO: figure out async commands for transfer.
     
     
-    VkDescriptorSetLayout mDescriptorSetLayout;//TODO: move temp to hold layout
+    VkDescriptorSetLayout mDescriptorSetLayout[2];//TODO: move temp to hold layout
     VkDescriptorSet mDescriptorSet[2]; //TODO: move temp to hold the descriptor;
 };
 

@@ -19,3 +19,4 @@ _deps
 /.config
 *.*.rdbg
 notes
+build.bat

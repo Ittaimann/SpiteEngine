@@ -5,7 +5,7 @@ project(spite VERSION 0.1)
 
 #TODO: check for more compiler
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    add_compile_options(-g -Wall -Wextra -pedantic -Werror)
 endif()
 
 

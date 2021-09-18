@@ -28,9 +28,7 @@ int main() {
 
     // TODO: Figure out a standard way to deal with paths to the cache.
     Loader loader;
-    ModelLoad loaded =
-        loader.loadModel("Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/"
-                         "glTF/TriangleWithoutIndices.gltf");
+    ModelLoad loaded = loader.loadModel("Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
     ShaderLoad vert = loader.loadShader("AssetCache/vert.spv");
     ShaderLoad frag = loader.loadShader("AssetCache/frag.spv");
 
@@ -49,19 +47,16 @@ int main() {
         std::vector<VulkanShader> shaders(2);
         renderer.buildShader(shaders[0], &vert);
         renderer.buildShader(shaders[1], &frag);
-        renderer.buildDescriptorSet(1);
         // TODO: prebuild the descriptor, its needed for the pipeline
         // pass in camera descriptor set styling here I guess?
-        renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(),
-                               shaders);
+        renderer.buildDescriptorSet(2);
+        renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders);
         VulkanVertexBuffer vertexBuffer;
         renderer.buildModel(vertexBuffer, &loaded, true);
 
         // buffer for the position data
         VulkanBuffer cameraLoc;
-        renderer.buildBuffer(cameraLoc, sizeof(glm::vec3),
-                             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT |
-                                 VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+        renderer.buildBuffer(cameraLoc, sizeof(glm::vec3), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
         Transform objectLocation; // temp world transform for the object
         Camera mainCamera;
@@ -76,9 +71,8 @@ int main() {
             // ideas down;
             glm::vec3 cameraPostion = mainCamera.getPosition();
             
-            cameraLoc.writeToBuffer(static_cast<void *>(&cameraPostion),
-                                    sizeof(glm::vec3));
-            renderer.updateDescriptors(1, &cameraLoc);
+            cameraLoc.writeToBuffer(static_cast<void *>(&cameraPostion), sizeof(glm::vec3));
+            renderer.updateDescriptors(2, &cameraLoc);
             // pool might just be a kinda singleton(?), where we have different
             // descriptor pools in it layout is just hand written for now. might
             // need to rely on spriv reflection, then based on material meta

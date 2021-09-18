@@ -20,20 +20,15 @@ void VulkanRenderer::init(bool validation, WindowManager *window) {
     mInstance.init(validation);
     mSurface.init(mInstance.getInstance(), window->getWindow());
     mPhysicalDevice.init(mInstance.getInstance(), mSurface.getVulkanSurface());
-    VulkanHelper::QueueFamilyIndices queueFamilies =
-        mPhysicalDevice.getFamilyIndices();
-    mDevice.init(validation, mPhysicalDevice.getPhysicalDevice(),
-                 queueFamilies);
-    mPresentQueue.init(mDevice.getDevice(),
-                       queueFamilies.presentFamily.value());
-    mGraphicsQueue.init(mDevice.getDevice(),
-                        queueFamilies.graphicsFamily.value());
-    mCommandPool.init(mDevice.getDevice(),
-                      queueFamilies.graphicsFamily.value());
-    mSwapChain.init(mDevice.getDevice(), mSurface.getVulkanSurface(),
-                    mPhysicalDevice.getSwapChainDetails(), queueFamilies,
+    VulkanHelper::QueueFamilyIndices queueFamilies = mPhysicalDevice.getFamilyIndices();
+    mDevice.init(validation, mPhysicalDevice.getPhysicalDevice(), queueFamilies);
+    mPresentQueue.init(mDevice.getDevice(), queueFamilies.presentFamily.value());
+    mGraphicsQueue.init(mDevice.getDevice(), queueFamilies.graphicsFamily.value());
+    mCommandPool.init(mDevice.getDevice(), queueFamilies.graphicsFamily.value());
+    mSwapChain.init(mDevice.getDevice(), mSurface.getVulkanSurface(), mPhysicalDevice.getSwapChainDetails(), queueFamilies,
                     window->getWidth(), window->getHeight());
-    initDescriptorPool();//TODO maybe.. no?
+
+    initDescriptorPool(); // TODO maybe.. no?
     VmaAllocatorCreateInfo allocatorInfo = {};
     allocatorInfo.physicalDevice = mPhysicalDevice.getPhysicalDevice();
     allocatorInfo.device = mDevice.getDevice();
@@ -41,10 +36,8 @@ void VulkanRenderer::init(bool validation, WindowManager *window) {
 
     vmaCreateAllocator(&allocatorInfo, &mAllocator);
 
-    VkSemaphoreCreateInfo semaphoreInfo = {
-        VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, nullptr, 0};
-    vkCreateSemaphore(mDevice.getDevice(), &semaphoreInfo, nullptr,
-                      &mQueueSubmitSemaphore);
+    VkSemaphoreCreateInfo semaphoreInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, nullptr, 0};
+    vkCreateSemaphore(mDevice.getDevice(), &semaphoreInfo, nullptr, &mQueueSubmitSemaphore);
 
     mDescriptorSet[0] = VK_NULL_HANDLE;
     mDescriptorSet[1] = VK_NULL_HANDLE;
@@ -65,10 +58,9 @@ void VulkanRenderer::initFrontBuffer() {
     }
 }
 
-void VulkanRenderer::initDescriptorPool()
-{
+void VulkanRenderer::initDescriptorPool() {
 
-    //TODO: allow for textures and other descriptor types possibly
+    // TODO: allow for textures and other descriptor types possibly
     VkDescriptorPoolSize descriptorPoolSizeInfo = {};
     descriptorPoolSizeInfo.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     descriptorPoolSizeInfo.descriptorCount = 10;
@@ -90,9 +82,12 @@ void VulkanRenderer::cleanup() {
     mFrontFrameBuffers.clear();
     mFrontRenderPass.cleanup();
     vkDestroySemaphore(mDevice.getDevice(), mQueueSubmitSemaphore, nullptr);
-
-    vkDestroyDescriptorSetLayout(mDevice.getDevice(), mDescriptorSetLayout,
+    
+    for( int i = 0; i < 2; i++)
+    {
+    vkDestroyDescriptorSetLayout(mDevice.getDevice(), mDescriptorSetLayout[i],
                                  nullptr);
+    }
     vkDestroyDescriptorPool(mDevice.getDevice(), mDescriptorPool, nullptr);
 
     mCommandPool.cleanup(mDevice.getDevice());
@@ -145,12 +140,9 @@ VulkanRenderPass *VulkanRenderer::getFrontRenderPass() {
     return &mFrontRenderPass;
 }
 
-void VulkanRenderer::buildPipeline(VulkanGraphicsPipeline &pipeline,
-                                   const VulkanRenderPass &renderpass,
-                                   const std::vector<VulkanShader> &shaders) {
+void VulkanRenderer::buildPipeline(VulkanGraphicsPipeline &pipeline, const VulkanRenderPass &renderpass, const std::vector<VulkanShader> &shaders) {
     // TODO: figure out how we are dealing with the descriptor layout
-    pipeline.init(mDevice.getDevice(), renderpass.getRenderPass(), shaders,
-                  mDescriptorSetLayout);
+    pipeline.init(mDevice.getDevice(), renderpass.getRenderPass(), shaders, mDescriptorSetLayout);
 }
 
 void VulkanRenderer::buildShader(VulkanShader &shader, ShaderLoad *shaderText) {
@@ -167,61 +159,78 @@ void VulkanRenderer::buildBuffer(VulkanBuffer &buffer, size_t size,
 void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum) {
     // build layout binding
     // TODO: this is very important so maybe just like care
-    VkDescriptorSetLayoutBinding layoutBindingInfo = {};
-    layoutBindingInfo.binding = 0;
-    layoutBindingInfo.descriptorCount = 1;
-    layoutBindingInfo.pImmutableSamplers = nullptr;
-    layoutBindingInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    layoutBindingInfo.stageFlags = VK_SHADER_STAGE_ALL;
+    // you didn't take care. You are allocating a descriptor set layout
+    // with two binding points, then only allocating 1 descriptor set
+    // (that will have both the binding points) 
+    //
+    VkDescriptorSetLayoutBinding layoutBindingInfo[2];
+    layoutBindingInfo[0].binding = 0;
+    layoutBindingInfo[0].descriptorCount = 1;
+    layoutBindingInfo[0].pImmutableSamplers = nullptr;
+    layoutBindingInfo[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    layoutBindingInfo[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    layoutBindingInfo[1].binding = 1;
+    layoutBindingInfo[1].descriptorCount = 1;
+    layoutBindingInfo[1].pImmutableSamplers = nullptr;
+    layoutBindingInfo[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    layoutBindingInfo[1].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     // build layout
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.pNext = nullptr;
     layoutInfo.flags = 0;
-    layoutInfo.bindingCount = bufferDescNum;
-    layoutInfo.pBindings = &layoutBindingInfo;
-
-    vkCreateDescriptorSetLayout(mDevice.getDevice(), &layoutInfo, nullptr,
-                                &mDescriptorSetLayout);
-
+    layoutInfo.bindingCount = 2;
+    layoutInfo.pBindings = layoutBindingInfo;
+    
+    //NOTE: FOR NEXT TIME:
+    //this DOES NOT return multiple descriptor set layouts. You only need 1
+    // it has the same bindings in here so its ok to do 1, just be aware to 
+    // make the alterations to the pipeline as well.`
+    VkResult lmao = vkCreateDescriptorSetLayout(mDevice.getDevice(), &layoutInfo, nullptr, mDescriptorSetLayout);
+    assert(lmao == VK_SUCCESS);
     // build descriptor
+    // descriptor allocation seems to be kinda silly?
+//    mDescriptorSetLayout[1] = mDescriptorSetLayout[0];
+
     VkDescriptorSetAllocateInfo descriptorAllocInfo = {};
     descriptorAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     descriptorAllocInfo.pNext = nullptr;
     descriptorAllocInfo.descriptorPool = mDescriptorPool;
-    descriptorAllocInfo.descriptorSetCount = 2;
-    descriptorAllocInfo.pSetLayouts = &mDescriptorSetLayout;
+    descriptorAllocInfo.descriptorSetCount = 1;
+    descriptorAllocInfo.pSetLayouts = mDescriptorSetLayout;
+    //NOTE FOR FUTURE ITTAI: the crash is because the descriptor set alloc info is
+    // expecting 2 descriptor setLayous most likely and thats
+    // why its dying, its attempting to access descriptor set layout 2 which doesn't exist
+    // why is there two descriptor sets though? seems like I probably don't need both?
+    // like what does my vertex shader look like?
+    lmao = vkAllocateDescriptorSets(mDevice.getDevice(), &descriptorAllocInfo, mDescriptorSet);
 
-    vkAllocateDescriptorSets(mDevice.getDevice(), &descriptorAllocInfo,
-                             mDescriptorSet);
+    assert(lmao == VK_SUCCESS);
 }
 // TODO: maybe change this to begin and end Command Recording. makes it more
 // obvious this is  command buffer.s
 void VulkanRenderer::beginRecording() {
-    mCommandPool
-        .beginRecording(); // maybe return a handle to the command buffer?
+    mCommandPool.beginRecording(); // maybe return a handle to the command buffer?
 }
-void VulkanRenderer::endRecording() { mCommandPool.endRecording(); }
+
+void VulkanRenderer::endRecording() { 
+    mCommandPool.endRecording(); 
+}
 
 // TODO: ties renderpass and framebuffer together
-void VulkanRenderer::beginRenderPass(VulkanRenderPass &renderpass,
-                                     VulkanFramebuffer &framebuffer) {
+void VulkanRenderer::beginRenderPass(VulkanRenderPass &renderpass, VulkanFramebuffer &framebuffer) {
     VkRenderPassBeginInfo renderPassBeginInfo = {};
     renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassBeginInfo.pNext = nullptr;
     renderPassBeginInfo.renderPass = renderpass.getRenderPass();
     renderPassBeginInfo.framebuffer = framebuffer.getFramebuffer();
-    renderPassBeginInfo.renderArea =
-        framebuffer
-            .getRenderArea(); // this could probably be set here instead
-                              // of from the framebuffer but do that later
-    renderPassBeginInfo.clearValueCount =
-        2; // TODO: temporary for one color and one depth attach;
+    renderPassBeginInfo.renderArea = framebuffer.getRenderArea(); // this could probably be set here instead of from the framebuffer but do that later
+    renderPassBeginInfo.clearValueCount = 2; // TODO: temporary for one color and one depth attach;
     VkClearValue clears[2];
     renderPassBeginInfo.pClearValues = clears;
 
-    vkCmdBeginRenderPass(mCommandPool.getCommandBuffer(), &renderPassBeginInfo,
-                         VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(mCommandPool.getCommandBuffer(), &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void VulkanRenderer::endRenderPass() {
@@ -231,41 +240,40 @@ void VulkanRenderer::endRenderPass() {
 void VulkanRenderer::bindVertexBuffer(VulkanVertexBuffer &vertexBuffer) {
     VkDeviceSize offsets = 0;
     VkBuffer baseBuffer = vertexBuffer.getVkBuffer();
-    vkCmdBindVertexBuffers(mCommandPool.getCommandBuffer(), 0, 1, &baseBuffer,
-                           &offsets);
+    vkCmdBindVertexBuffers(mCommandPool.getCommandBuffer(), 0, 1, &baseBuffer, &offsets);
 }
 
 void VulkanRenderer::bindPipeline(VulkanGraphicsPipeline &pipeline) {
-    vkCmdBindPipeline(mCommandPool.getCommandBuffer(),
-                      VK_PIPELINE_BIND_POINT_GRAPHICS,
-                      pipeline.getGraphicsPipeline());
+    vkCmdBindPipeline(mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
 }
 
 void VulkanRenderer::bindDescriptorSet(VulkanGraphicsPipeline &pipeline) {
-    vkCmdBindDescriptorSets(
-        mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-        pipeline.getGraphicsPipelineLayout(), 0, 2 , mDescriptorSet, 0, 0);
+    vkCmdBindDescriptorSets(mCommandPool.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            pipeline.getGraphicsPipelineLayout(), 0, 1, mDescriptorSet, 0, 0);
 }
 void VulkanRenderer::updateDescriptors(uint32_t descriptorWriteCount,
                                        VulkanBuffer *bufferInput) {
     VkDescriptorBufferInfo bufferWriteInfo = {};
     bufferWriteInfo.buffer = bufferInput->getBuffer();
-    bufferWriteInfo.offset = 0;
+    bufferWriteInfo.offset =0;// sizeof(float); // TODO: redo
     bufferWriteInfo.range = sizeof(glm::vec3);
-
-    VkWriteDescriptorSet descriptorWrite = {};
-    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = mDescriptorSet[0];//TODO: NOT THIS
-    descriptorWrite.descriptorCount = descriptorWriteCount;
-    descriptorWrite.pBufferInfo = &bufferWriteInfo;
-    descriptorWrite.pImageInfo = nullptr;
-    descriptorWrite.pTexelBufferView = nullptr;
-    descriptorWrite.dstBinding = 0;
-    descriptorWrite.dstArrayElement = 0;
-    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-
-    vkUpdateDescriptorSets(mDevice.getDevice(), descriptorWriteCount,
-                           &descriptorWrite, 0, nullptr);
+   // std::vector< VkWriteDescriptorSet > descriptorWrite(descriptorWriteCount);
+    //TODO: remove this, do this properly
+    VkWriteDescriptorSet descriptorWrite;
+    for( size_t i = 0; i < 2; i++ )
+    {
+        descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrite.pNext = nullptr;
+        descriptorWrite.dstSet = mDescriptorSet[0]; // TODO: NOT THIS
+        descriptorWrite.descriptorCount = 1;//descriptorWriteCount;
+        descriptorWrite.pBufferInfo = &bufferWriteInfo;
+        descriptorWrite.pImageInfo = nullptr;
+        descriptorWrite.pTexelBufferView = nullptr;
+        descriptorWrite.dstBinding = i;
+        descriptorWrite.dstArrayElement = 0;
+        descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    }
+    vkUpdateDescriptorSets(mDevice.getDevice(), /*descriptorWriteCount*/1, &descriptorWrite, 0, nullptr);
 }
 void VulkanRenderer::draw() {
     vkCmdDraw(mCommandPool.getCommandBuffer(), 3, 1, 0, 0);
@@ -277,8 +285,7 @@ void VulkanRenderer::beginFrame() {
     VkCommandBuffer copyBuffer = mCommandPool.getCommandBuffer();
     for (size_t i = 0; i < mCopyCommandQueue.size(); i++) {
         // TODO: create a path for images.
-        mCopyCommandQueue.at(i).dst->unstageBuffer(
-            copyBuffer, *mCopyCommandQueue.at(i).src);
+        mCopyCommandQueue.at(i).dst->unstageBuffer(copyBuffer, *mCopyCommandQueue.at(i).src);
     }
     mCommandPool.endRecording();
 }
@@ -293,8 +300,7 @@ void VulkanRenderer::endFrame() {
         mCopyCommandQueue.at(i).src->cleanup();
     }
     mCopyCommandQueue.clear();
-    mCurrentFrame = (mCurrentFrame + 1) %
-                    3; // TODO: figure out the proper max frames in flight
+    mCurrentFrame = (mCurrentFrame + 1) % 3; // TODO: figure out the proper max frames in flight
 }
 
 void VulkanRenderer::submitFrame() {
