@@ -157,7 +157,6 @@ void VulkanRenderer::buildBuffer(VulkanBuffer &buffer, size_t size,
 }
 
 void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum) {
-    // build layout binding
     // TODO: this is very important so maybe just like care
     // you didn't take care. You are allocating a descriptor set layout
     // with two binding points, then only allocating 1 descriptor set
@@ -175,7 +174,7 @@ void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum) {
     layoutBindingInfo[1].pImmutableSamplers = nullptr;
     layoutBindingInfo[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     layoutBindingInfo[1].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    // build layout
+    
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.pNext = nullptr;
@@ -255,9 +254,8 @@ void VulkanRenderer::updateDescriptors(uint32_t descriptorWriteCount,
                                        VulkanBuffer *bufferInput) {
     VkDescriptorBufferInfo bufferWriteInfo = {};
     bufferWriteInfo.buffer = bufferInput->getBuffer();
-    bufferWriteInfo.offset =0;// sizeof(float); // TODO: redo
+    bufferWriteInfo.offset =0;
     bufferWriteInfo.range = sizeof(glm::vec3);
-   // std::vector< VkWriteDescriptorSet > descriptorWrite(descriptorWriteCount);
     //TODO: remove this, do this properly
     VkWriteDescriptorSet descriptorWrite;
     for( size_t i = 0; i < 2; i++ )
@@ -272,8 +270,8 @@ void VulkanRenderer::updateDescriptors(uint32_t descriptorWriteCount,
         descriptorWrite.dstBinding = i;
         descriptorWrite.dstArrayElement = 0;
         descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        vkUpdateDescriptorSets(mDevice.getDevice(), /*descriptorWriteCount*/1, &descriptorWrite, 0, nullptr);
     }
-    vkUpdateDescriptorSets(mDevice.getDevice(), /*descriptorWriteCount*/1, &descriptorWrite, 0, nullptr);
 }
 void VulkanRenderer::draw() {
     vkCmdDraw(mCommandPool.getCommandBuffer(), 3, 1, 0, 0);
