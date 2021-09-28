@@ -2,21 +2,24 @@
 #define CAMERA_H
 
 #include "WindowManager.h"
-#include "Transform.h"
+#include "glm/glm.hpp"
 
-class Camera
-{
-public:
+class Camera {
+  public:
     Camera();
     ~Camera();
 
-    void init();
+    void init(const uint32_t &width, const uint32_t &height);
     void cleanup();
     void update();
-    glm::vec3 getPosition();    
-private:
+    glm::vec3 getPosition();
+    glm::mat4 getView();
+    glm::mat4 getProjection();
+
+  private:
     //TODO: replace with a proper position struct/transform
-//	Transform mTransform;
-	glm::vec3 mPos;
+    glm::vec3 mPos;
+    glm::mat4 mView;
+    glm::mat4 mProjection;
 };
 #endif

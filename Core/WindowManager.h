@@ -8,7 +8,7 @@ class WindowManager
 public:
     WindowManager();
     ~WindowManager();
-    void init(uint32_t width, uint32_t height);
+    void init(const uint32_t width, const uint32_t height);
     void cleanup();
 
     GLFWwindow* getWindow() const;

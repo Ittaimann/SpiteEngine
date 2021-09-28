@@ -7,6 +7,9 @@
 // including extra vulkan stuff.
 
 #include "VulkanRenderer/VulkanRenderer.h"
+
+const uint32_t WIDTH = 480;
+const uint32_t HEIGHT = 320;
 // REFACTOR: get the framebuffer,renderpass, and pipeline interop better.
 // Instead of writing to a front buffer all the time write to a back buffer and
 // flush to front REFACTOR: find where you are using constnats and stop doing
@@ -22,7 +25,7 @@ int main() {
     bool validation = true;
 
     WindowManager window;
-    window.init(480, 320);
+    window.init(WIDTH, HEIGHT);
     InputManager *input = InputManager::getInputManger();
     input->init(&window);
 
@@ -42,6 +45,8 @@ int main() {
     // a struct of data we pass into the apis and  then have a driver pointer
     // attach
     {
+        // TODO: find a way to map this game object to the rest of the graphics state; 
+        GameObject triangle;
 
         VulkanGraphicsPipeline pipeline;
         std::vector<VulkanShader> shaders(2);
@@ -58,9 +63,9 @@ int main() {
         VulkanBuffer cameraLoc;
         renderer.buildBuffer(cameraLoc, sizeof(glm::vec3), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
-        Transform objectLocation; // temp world transform for the object
         Camera mainCamera;
-        glm::mat4 trans = glm::mat4(1.0f);
+        mainCamera.init(WIDTH, HEIGHT);
+
         while (window.getWindowClosed()) {
             // input
             window.pollEvents();
@@ -69,9 +74,16 @@ int main() {
             // projection matrix; currently following this tutorial:
             // https://learnopengl.com/Getting-started/Camera to get camera
             // ideas down;
-            glm::vec3 cameraPostion = mainCamera.getPosition();
-            
-            cameraLoc.writeToBuffer(static_cast<void *>(&cameraPostion), sizeof(glm::vec3));
+            glm::mat4 cameraView = mainCamera.getView();
+            glm::mat4 camerPerspective = mainCamera.getProjection();
+            glm::mat4 gameObjectTransform = triangle.getTransform();
+
+            // need descriptor for perspective, view, and model location;
+            // write all to same buffer?
+            // while thats probably the better idea, i want the practice and to write
+            // more descriptor code just for understanding.
+           
+            cameraLoc.writeToBuffer(static_cast<void *>(&cameraView), sizeof(glm::mat4));
             renderer.updateDescriptors(2, &cameraLoc);
             // pool might just be a kinda singleton(?), where we have different
             // descriptor pools in it layout is just hand written for now. might

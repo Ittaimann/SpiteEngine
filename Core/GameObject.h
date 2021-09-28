@@ -1,16 +1,18 @@
 #ifndef GAME_OBJECT_H
 #define GAME_OBJECT_H
 
-#include "Transform.h"
-//#include "Mesh.h"
+#include <glm/mat4x4.hpp>
+
 class GameObject
 {
 public:
 	GameObject();
 	~GameObject();
+    glm::mat4 getTransform();
 
 private:
-//	Transform mTransform;
+    glm::mat4 mTransform;
+	//Transform mTransform;
 };
 
 #endif

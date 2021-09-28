@@ -5,7 +5,7 @@ WindowManager::WindowManager()
 WindowManager::~WindowManager()
 {}
 
-void WindowManager::init(uint32_t width, uint32_t height)
+void WindowManager::init(const uint32_t width, const uint32_t height)
 {
     mWidth = width;
     mHeight = height;
