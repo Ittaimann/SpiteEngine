@@ -19,6 +19,7 @@
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanShader.h"
 #include "VulkanVertexBuffer.h"
+#include "VulkanDescriptor.h"
 
 class WindowManager;
 class ModelLoad;
@@ -95,8 +96,8 @@ private:
     std::vector<dataTransfer> mCopyCommandQueue; //TODO: figure out async commands for transfer.
     
     
-    VkDescriptorSetLayout mDescriptorSetLayout[2];//TODO: move temp to hold layout
-    VkDescriptorSet mDescriptorSet[2]; //TODO: move temp to hold the descriptor;
+    //VkDescriptorSetLayout mDescriptorSetLayout[2];//TODO: move temp to hold layout
+    //VkDescriptorSet mDescriptorSet[2]; //TODO: move temp to hold the descriptor;
 };
 
 #endif // vulkan driver

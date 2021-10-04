@@ -16,4 +16,7 @@ void ShaderLoad::setData(const std::vector<char>& data)
     mSize = data.size();
 }
 
-
+ShaderData ShaderLoad::getShaderData()
+{
+    return mLoadedMetaData;
+}

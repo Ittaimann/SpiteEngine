@@ -9,6 +9,7 @@ add_library(
     Camera.cpp
     InputManager.cpp
     GameObject.cpp
+    GraphicsObject.cpp
 )
 
 target_link_libraries(Core glfw ${GLFW_LIBRARIES})

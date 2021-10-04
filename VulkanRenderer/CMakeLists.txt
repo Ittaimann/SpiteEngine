@@ -18,6 +18,7 @@ add_library(
     VulkanFramebuffer.cpp
     VulkanGraphicsPipeline.cpp
     VulkanShader.cpp
+    VulkanDescriptor.cpp
 )
 
 target_link_libraries(VulkanDriver glfw ${GLFW_LIBRARIES} Vulkan::Vulkan)

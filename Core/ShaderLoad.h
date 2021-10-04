@@ -25,10 +25,11 @@ public:
     const void* getData() const;
     void setData(const std::vector<char>& data);
     std::vector<char> compileShader(); 
+    ShaderData getShaderData();
 private:
     std::vector<char> mData;
     uint32_t mSize;
-    ShaderData loadedMetaData;
+    ShaderData mLoadedMetaData;
 };
 
 

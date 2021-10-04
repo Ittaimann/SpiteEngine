@@ -32,6 +32,7 @@ int main() {
     // TODO: Figure out a standard way to deal with paths to the cache.
     Loader loader;
     ModelLoad loaded = loader.loadModel("Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
+    //need some meta data around these shaders...
     ShaderLoad vert = loader.loadShader("AssetCache/vert.spv");
     ShaderLoad frag = loader.loadShader("AssetCache/frag.spv");
 
@@ -45,23 +46,29 @@ int main() {
     // a struct of data we pass into the apis and  then have a driver pointer
     // attach
     {
-        // TODO: find a way to map this game object to the rest of the graphics state; 
-        GameObject triangle;
 
-        VulkanGraphicsPipeline pipeline;
         std::vector<VulkanShader> shaders(2);
         renderer.buildShader(shaders[0], &vert);
-        renderer.buildShader(shaders[1], &frag);
+        renderer.buildShader(shaders[1], &frag); 
+
         // TODO: prebuild the descriptor, its needed for the pipeline
         // pass in camera descriptor set styling here I guess?
         renderer.buildDescriptorSet(2);
-        renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders);
+        VulkanGraphicsPipeline pipeline;
+        renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders); 
         VulkanVertexBuffer vertexBuffer;
         renderer.buildModel(vertexBuffer, &loaded, true);
 
         // buffer for the position data
         VulkanBuffer cameraLoc;
         renderer.buildBuffer(cameraLoc, sizeof(glm::vec3), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+
+        // TODO: find a way to map this game object to the rest of the graphics state; 
+        GameObject triangle;
+        triangle.getGraphicsObject().setShader(ShaderStage::VERTEX,&shaders[0]); 
+        triangle.getGraphicsObject().setShader(ShaderStage::FRAGMENT,&shaders[1]);
+        triangle.getGraphicsObject().setVertexBuffer(&vertexBuffer);
+        triangle.getGraphicsObject().setPipline(&pipeline);
 
         Camera mainCamera;
         mainCamera.init(WIDTH, HEIGHT);
@@ -77,6 +84,7 @@ int main() {
             glm::mat4 cameraView = mainCamera.getView();
             glm::mat4 camerPerspective = mainCamera.getProjection();
             glm::mat4 gameObjectTransform = triangle.getTransform();
+            
 
             // need descriptor for perspective, view, and model location;
             // write all to same buffer?

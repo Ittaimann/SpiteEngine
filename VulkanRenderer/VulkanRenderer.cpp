@@ -39,8 +39,8 @@ void VulkanRenderer::init(bool validation, WindowManager *window) {
     VkSemaphoreCreateInfo semaphoreInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, nullptr, 0};
     vkCreateSemaphore(mDevice.getDevice(), &semaphoreInfo, nullptr, &mQueueSubmitSemaphore);
 
-    mDescriptorSet[0] = VK_NULL_HANDLE;
-    mDescriptorSet[1] = VK_NULL_HANDLE;
+    //mDescriptorSet[0] = VK_NULL_HANDLE;
+    //mDescriptorSet[1] = VK_NULL_HANDLE;
     mCurrentFrame = 0;
     initFrontBuffer();
 }
