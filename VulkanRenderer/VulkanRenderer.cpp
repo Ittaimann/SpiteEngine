@@ -156,7 +156,8 @@ void VulkanRenderer::buildBuffer(VulkanBuffer &buffer, size_t size,
                 VMA_MEMORY_USAGE_CPU_TO_GPU);
 }
 
-void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum) {
+void VulkanRenderer::buildDescriptorSet(VulkanDescriptor& descriptor, uint32_t bufferDescNum) {
+    descriptor.init(); 
     // TODO: this is very important so maybe just like care
     // you didn't take care. You are allocating a descriptor set layout
     // with two binding points, then only allocating 1 descriptor set
@@ -186,7 +187,7 @@ void VulkanRenderer::buildDescriptorSet(uint32_t bufferDescNum) {
     //this DOES NOT return multiple descriptor set layouts. You only need 1
     // it has the same bindings in here so its ok to do 1, just be aware to 
     // make the alterations to the pipeline as well.`
-    VkResult lmao = vkCreateDescriptorSetLayout(mDevice.getDevice(), &layoutInfo, nullptr, mDescriptorSetLayout);
+    VkResult lmao = vkCreateDescriptorSetLayout(mDevice.getDevice(), &layoutInfo, nullptr, mDescriptorSetLayout)
     assert(lmao == VK_SUCCESS);
     // build descriptor
     // descriptor allocation seems to be kinda silly?

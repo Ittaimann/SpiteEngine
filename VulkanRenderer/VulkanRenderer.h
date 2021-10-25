@@ -41,7 +41,7 @@ public:
     void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
     void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
     void buildBuffer(VulkanBuffer& buffer, size_t size, VkBufferUsageFlags tempUsageFlag, void* data = nullptr);
-    void buildDescriptorSet(uint32_t bufferDescNum); // TODO: add textures and other descriptors
+    void buildDescriptorSet(VulkanDescriptor& descriptor, uint32_t bufferDescNum); // TODO: add textures and other descriptors
     
     // TODO: rename these/repuprose these, change them to begin recording or something
     void beginFrame();

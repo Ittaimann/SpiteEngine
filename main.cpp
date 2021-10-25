@@ -34,7 +34,7 @@ int main() {
     ModelLoad loaded = loader.loadModel("Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
     //need some meta data around these shaders...
     ShaderLoad vert = loader.loadShader("AssetCache/vert.spv");
-    ShaderLoad frag = loader.loadShader("AssetCache/frag.spv");
+    ShaderLoad frag = loader.loadShader("AssetCache/frag.spv");    
 
     VulkanRenderer renderer;
     renderer.init(validation, &window);
@@ -58,18 +58,18 @@ int main() {
         renderer.buildPipeline(pipeline, *renderer.getFrontRenderPass(), shaders); 
         VulkanVertexBuffer vertexBuffer;
         renderer.buildModel(vertexBuffer, &loaded, true);
-
+        VulkanDescriptor descriptors;
         // buffer for the position data
         VulkanBuffer cameraLoc;
         renderer.buildBuffer(cameraLoc, sizeof(glm::vec3), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
-        // TODO: find a way to map this game object to the rest of the graphics state; 
+        // TODO:Find a way to asset this 
         GameObject triangle;
         triangle.getGraphicsObject().setShader(ShaderStage::VERTEX,&shaders[0]); 
         triangle.getGraphicsObject().setShader(ShaderStage::FRAGMENT,&shaders[1]);
         triangle.getGraphicsObject().setVertexBuffer(&vertexBuffer);
         triangle.getGraphicsObject().setPipline(&pipeline);
-
+        triangle.getGraphicsObject().setDescriptors();
         Camera mainCamera;
         mainCamera.init(WIDTH, HEIGHT);
 
