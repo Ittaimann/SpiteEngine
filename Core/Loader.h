@@ -21,10 +21,12 @@ class Loader
 {
 public:
     ModelLoad loadModel(const std::string& file); //OPTIMIZE: could probably char* this and remove string in header
-    ShaderLoad loadShader (const std::string& file); //TODO: add an online compile option.
+    //TODO: remove this standard vector nonsense. This is absolutely NOt how I want to do this
+    std::vector<ShaderLoad> loadShader (const std::string& file); //TODO: add an online compile option.
 private:
     std::vector<char> readFile(const std::string& filename);
     ModelLoad loadGltfModel(const std::string& path);
+    uint8_t determineDescriptorType(const std::string& type);
 };
 
 #endif

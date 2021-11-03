@@ -23,10 +23,10 @@ void GraphicsObject::updateMatrix(const glm::mat4 &updatedTransform)
 void GraphicsObject::setShader(/*const ShaderData shaderData*/ShaderStage stage, VulkanShader *vulkanShader)
 {
     switch (stage) {
-        case VERTEX:
+        case ShaderStage::VERTEX:
             vert = vulkanShader;
             break;
-        case FRAGMENT:
+        case ShaderStage::FRAGMENT:
             frag = vulkanShader;
             break;
     }

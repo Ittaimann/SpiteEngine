@@ -41,7 +41,7 @@ public:
     void buildPipeline(VulkanGraphicsPipeline& pipeline,const VulkanRenderPass& renderpass, const std::vector<VulkanShader>& shaders);
     void buildShader(VulkanShader& shader, ShaderLoad* shaderText);
     void buildBuffer(VulkanBuffer& buffer, size_t size, VkBufferUsageFlags tempUsageFlag, void* data = nullptr);
-    void buildDescriptorSet(VulkanDescriptor& descriptor, uint32_t bufferDescNum); // TODO: add textures and other descriptors
+    void buildDescriptorSet(/*VulkanDescriptor& descriptor,*/ uint32_t bufferDescNum); // TODO: add textures and other descriptors
     
     // TODO: rename these/repuprose these, change them to begin recording or something
     void beginFrame();
@@ -96,8 +96,9 @@ private:
     std::vector<dataTransfer> mCopyCommandQueue; //TODO: figure out async commands for transfer.
     
     
-    //VkDescriptorSetLayout mDescriptorSetLayout[2];//TODO: move temp to hold layout
-    //VkDescriptorSet mDescriptorSet[2]; //TODO: move temp to hold the descriptor;
+
+    VkDescriptorSetLayout mDescriptorSetLayout[2];//TODO: move temp to hold layout
+    VkDescriptorSet mDescriptorSet[2]; //TODO: move temp to hold the descriptor;
 };
 
 #endif // vulkan driver

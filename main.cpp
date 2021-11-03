@@ -33,9 +33,11 @@ int main() {
     Loader loader;
     ModelLoad loaded = loader.loadModel("Assets/glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
     //need some meta data around these shaders...
-    ShaderLoad vert = loader.loadShader("AssetCache/vert.spv");
-    ShaderLoad frag = loader.loadShader("AssetCache/frag.spv");    
-
+    //TODO: 
+    std::vector<ShaderLoad> meta = loader.loadShader("AssetCache/shaderMeta.json");
+//    ShaderLoad vert = loader.loadShader("AssetCache/vert.spv");
+//  ShaderLoad frag = loader.loadShader("AssetCache/frag.spv");    
+    return;
     VulkanRenderer renderer;
     renderer.init(validation, &window);
 
@@ -48,8 +50,8 @@ int main() {
     {
 
         std::vector<VulkanShader> shaders(2);
-        renderer.buildShader(shaders[0], &vert);
-        renderer.buildShader(shaders[1], &frag); 
+        renderer.buildShader(shaders[0], &meta[0]);
+        renderer.buildShader(shaders[1], &meta[1]); 
 
         // TODO: prebuild the descriptor, its needed for the pipeline
         // pass in camera descriptor set styling here I guess?
@@ -69,7 +71,7 @@ int main() {
         triangle.getGraphicsObject().setShader(ShaderStage::FRAGMENT,&shaders[1]);
         triangle.getGraphicsObject().setVertexBuffer(&vertexBuffer);
         triangle.getGraphicsObject().setPipline(&pipeline);
-        triangle.getGraphicsObject().setDescriptors();
+//        triangle.getGraphicsObject().setDescriptors();
         Camera mainCamera;
         mainCamera.init(WIDTH, HEIGHT);
 

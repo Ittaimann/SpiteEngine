@@ -16,7 +16,16 @@ void ShaderLoad::setData(const std::vector<char>& data)
     mSize = data.size();
 }
 
+//TODO: remove if unused
 ShaderData ShaderLoad::getShaderData()
 {
     return mLoadedMetaData;
 }
+
+//TODO: remove if unused 
+void ShaderLoad::initShaderMeta(ShaderStage stage, const std::vector<shaderDescriptor> data)
+{
+    mLoadedMetaData.stage = stage;
+    mLoadedMetaData.mData = data;
+}
+

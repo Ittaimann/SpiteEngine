@@ -57,10 +57,36 @@ ModelLoad Loader::loadGltfModel(const std::string &path) {
     return result;
 }
 
-ShaderLoad Loader::loadShader(const std::string &path) {
-    ShaderLoad result;
-    std::vector<char> Buffer = readFile(path);
-    result.setData(Buffer);
+std::vector<ShaderLoad> Loader::loadShader(const std::string &path) {
+    //TODO: consume shader meta file here and build it out
+
+    std::vector<ShaderLoad> result;
+    //std::vector<char> Buffer = readFile(path);
+
+    std::ifstream file(path); //, std::ios::ate | std::ios::binary);
+    json j;
+    file >> j;
+    std::cout << j["_comment"] << std::endl;
+    auto stages = j["stages"];
+    for (auto stage : stages) {
+        ShaderLoad &newShader = result.emplace_back();
+        //TODO: don't do this
+        std::string assetCache = "AssetCache/";
+        assetCache += stage["file"];
+        std::vector<char> shaderBinary = readFile(assetCache);
+        newShader.setData(shaderBinary);
+        ShaderStage shaderStage = (ShaderStage)stage["stage"];
+        auto inputs = stage["inputs"];
+        std::vector<shaderDescriptor> descriptors;
+        for (auto descriptor : inputs) {
+            shaderDescriptor &newDescriptor = descriptors.emplace_back();
+            newDescriptor.mBindingLocation = descriptor["binding"];
+            newDescriptor.mSetLocation = 0; // temp 0
+            newDescriptor.mSize = descriptor["size"];
+            newDescriptor.mType = (ShaderDataType)determineDescriptorType(descriptor["type"]); // need to do the string convert... UGH
+        }
+        newShader.initShaderMeta(shaderStage, descriptors);
+    }
     return result;
 }
 
@@ -80,4 +106,14 @@ std::vector<char> Loader::readFile(const std::string &filename) {
     file.close();
 
     return buffer;
+}
+
+//TODO: rethink this. Its just a silly way of doing it
+uint8_t Loader::determineDescriptorType(const std::string &type) {
+    if (type == "buffer") {
+        return 0;
+    } else {
+        assert(false);
+        return 0;
+    }
 }
